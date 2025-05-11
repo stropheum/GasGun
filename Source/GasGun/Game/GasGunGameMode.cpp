@@ -1,7 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "GasGunGameMode.h"
-#include "../Player/GasGunCharacter.h"
+#include "../Characters/GasGunCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 
 AGasGunGameMode::AGasGunGameMode()

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/SphereComponent.h"
-#include "../Player/GasGunCharacter.h"
+#include "../Characters/GasGunCharacter.h"
 #include "GasGunPickUpComponent.generated.h"
 
 // Declaration of the delegate that will be called when someone picks this up
