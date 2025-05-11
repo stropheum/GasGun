@@ -2,7 +2,7 @@
 
 
 #include "GasGunWeaponComponent.h"
-#include "GasGunCharacter.h"
+#include "../Player/GasGunCharacter.h"
 #include "GasGunProjectile.h"
 #include "GameFramework/PlayerController.h"
 #include "Camera/PlayerCameraManager.h"
