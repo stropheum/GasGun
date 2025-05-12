@@ -41,10 +41,6 @@ APlayerCharacter::APlayerCharacter()
 void APlayerCharacter::Tick(const float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-	if (EquippedWeapon)
-	{
-		DrawDebugSphere(GetWorld(), EquippedWeapon->GetProjectileSpawnLocation(), 1.f, 32, FColor::Cyan);
-	}
 }
 
 //////////////////////////////////////////////////////////////////////////// Input
