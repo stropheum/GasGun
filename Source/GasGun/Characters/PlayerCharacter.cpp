@@ -1,7 +1,7 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright 2025 Dale "Stropheum" Diaz
 
-#include "GasGunCharacter.h"
-#include "../Guns/GasGunProjectile.h"
+#include "PlayerCharacter.h"
+#include "../Guns/Projectile.h"
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -10,13 +10,14 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Engine/LocalPlayer.h"
+#include "GasGun/Guns/WeaponComponent.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 //////////////////////////////////////////////////////////////////////////
 // AGasGunCharacter
 
-AGasGunCharacter::AGasGunCharacter()
+APlayerCharacter::APlayerCharacter()
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
@@ -37,9 +38,18 @@ AGasGunCharacter::AGasGunCharacter()
 
 }
 
+void APlayerCharacter::Tick(const float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	if (EquippedWeapon)
+	{
+		DrawDebugSphere(GetWorld(), EquippedWeapon->GetProjectileSpawnLocation(), 1.f, 32, FColor::Cyan);
+	}
+}
+
 //////////////////////////////////////////////////////////////////////////// Input
 
-void AGasGunCharacter::NotifyControllerChanged()
+void APlayerCharacter::NotifyControllerChanged()
 {
 	Super::NotifyControllerChanged();
 
@@ -53,7 +63,7 @@ void AGasGunCharacter::NotifyControllerChanged()
 	}
 }
 
-void AGasGunCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {	
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
@@ -63,10 +73,10 @@ void AGasGunCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
 		// Moving
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AGasGunCharacter::Move);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);
 
 		// Looking
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AGasGunCharacter::Look);
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
 	}
 	else
 	{
@@ -75,7 +85,7 @@ void AGasGunCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 }
 
 
-void AGasGunCharacter::Move(const FInputActionValue& Value)
+void APlayerCharacter::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
@@ -88,7 +98,7 @@ void AGasGunCharacter::Move(const FInputActionValue& Value)
 	}
 }
 
-void AGasGunCharacter::Look(const FInputActionValue& Value)
+void APlayerCharacter::Look(const FInputActionValue& Value)
 {
 	// input is a Vector2D
 	FVector2D LookAxisVector = Value.Get<FVector2D>();

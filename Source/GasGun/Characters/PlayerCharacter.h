@@ -1,12 +1,13 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright 2025 Dale "Stropheum" Diaz
 
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+#include "CharacterBase.h"
 #include "Logging/LogMacros.h"
-#include "GasGunCharacter.generated.h"
+#include "PlayerCharacter.generated.h"
 
+class UWeaponComponent;
 class UInputComponent;
 class USkeletalMeshComponent;
 class UCameraComponent;
@@ -17,7 +18,7 @@ struct FInputActionValue;
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
 UCLASS(config=Game)
-class AGasGunCharacter : public ACharacter
+class APlayerCharacter : public ACharacterBase
 {
 	GENERATED_BODY()
 
@@ -44,9 +45,20 @@ class AGasGunCharacter : public ACharacter
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction;
+
+	UPROPERTY()
+	UWeaponComponent* EquippedWeapon = nullptr;
 	
 public:
-	AGasGunCharacter();
+	APlayerCharacter();
+
+	virtual void Tick(float DeltaSeconds) override;
+
+	UFUNCTION()
+	UWeaponComponent* GetWeapon() const { return EquippedWeapon; }
+	
+	UFUNCTION()
+	void SetWeapon(UWeaponComponent* Weapon) { EquippedWeapon = Weapon; }
 
 protected:
 	/** Called for movement input */

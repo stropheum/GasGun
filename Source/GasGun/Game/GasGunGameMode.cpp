@@ -1,7 +1,7 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright 2025 Dale "Stropheum" Diaz
 
 #include "GasGunGameMode.h"
-#include "../Characters/GasGunCharacter.h"
+#include "../Characters/PlayerCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 
 AGasGunGameMode::AGasGunGameMode()

@@ -1,9 +1,8 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright 2025 Dale "Stropheum" Diaz
 
-
-#include "GasGunWeaponComponent.h"
-#include "../Characters/GasGunCharacter.h"
-#include "GasGunProjectile.h"
+#include "WeaponComponent.h"
+#include "../Characters/PlayerCharacter.h"
+#include "Projectile.h"
 #include "GameFramework/PlayerController.h"
 #include "Camera/PlayerCameraManager.h"
 #include "Kismet/GameplayStatics.h"
@@ -14,14 +13,14 @@
 #include "Engine/World.h"
 
 // Sets default values for this component's properties
-UGasGunWeaponComponent::UGasGunWeaponComponent()
+UWeaponComponent::UWeaponComponent()
 {
 	// Default offset from the character location for projectiles to spawn
-	MuzzleOffset = FVector(100.0f, 0.0f, 10.0f);
+	MuzzleOffset = FVector(56.5f, 14.25f, 11.3f);
 }
 
 
-void UGasGunWeaponComponent::Fire()
+void UWeaponComponent::Fire()
 {
 	if (Character == nullptr || Character->GetController() == nullptr)
 	{
@@ -44,7 +43,7 @@ void UGasGunWeaponComponent::Fire()
 			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 	
 			// Spawn the projectile at the muzzle
-			World->SpawnActor<AGasGunProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+			World->SpawnActor<AProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
 		}
 	}
 	
@@ -66,12 +65,19 @@ void UGasGunWeaponComponent::Fire()
 	}
 }
 
-bool UGasGunWeaponComponent::AttachWeapon(AGasGunCharacter* TargetCharacter)
+FVector UWeaponComponent::GetProjectileSpawnLocation() const
+{
+	const APlayerController* PlayerController = Cast<APlayerController>(Character->GetController());
+	const FRotator SpawnRotation = PlayerController->PlayerCameraManager->GetCameraRotation();
+	return GetOwner()->GetActorLocation() + SpawnRotation.RotateVector(MuzzleOffset);
+}
+
+bool UWeaponComponent::AttachWeapon(APlayerCharacter* TargetCharacter)
 {
 	Character = TargetCharacter;
 
 	// Check that the character is valid, and has no weapon component yet
-	if (Character == nullptr || Character->GetInstanceComponents().FindItemByClass<UGasGunWeaponComponent>())
+	if (Character == nullptr || Character->GetInstanceComponents().FindItemByClass<UWeaponComponent>())
 	{
 		return false;
 	}
@@ -83,6 +89,11 @@ bool UGasGunWeaponComponent::AttachWeapon(AGasGunCharacter* TargetCharacter)
 	// Set up action bindings
 	if (APlayerController* PlayerController = Cast<APlayerController>(Character->GetController()))
 	{
+		if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(Character))
+		{
+			PlayerCharacter->SetWeapon(this);	
+		}
+		
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			// Set the priority of the mapping to 1, so that it overrides the Jump action with the Fire action when using touch input
@@ -92,14 +103,14 @@ bool UGasGunWeaponComponent::AttachWeapon(AGasGunCharacter* TargetCharacter)
 		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerController->InputComponent))
 		{
 			// Fire
-			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &UGasGunWeaponComponent::Fire);
+			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &UWeaponComponent::Fire);
 		}
 	}
 
 	return true;
 }
 
-void UGasGunWeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void UWeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	// ensure we have a character owner
 	if (Character != nullptr)

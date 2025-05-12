@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright 2025 Dale "Stropheum" Diaz
 
 #include "GasGun.h"
 #include "Modules/ModuleManager.h"

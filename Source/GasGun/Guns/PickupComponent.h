@@ -1,18 +1,18 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright 2025 Dale "Stropheum" Diaz
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Components/SphereComponent.h"
-#include "../Characters/GasGunCharacter.h"
-#include "GasGunPickUpComponent.generated.h"
+#include "../Characters/PlayerCharacter.h"
+#include "PickupComponent.generated.h"
 
 // Declaration of the delegate that will be called when someone picks this up
 // The character picking this up is the parameter sent with the notification
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPickUp, AGasGunCharacter*, PickUpCharacter);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPickUp, APlayerCharacter*, PickUpCharacter);
 
 UCLASS(Blueprintable, BlueprintType, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class GASGUN_API UGasGunPickUpComponent : public USphereComponent
+class GASGUN_API UPickupComponent : public USphereComponent
 {
 	GENERATED_BODY()
 
@@ -22,13 +22,11 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Interaction")
 	FOnPickUp OnPickUp;
 
-	UGasGunPickUpComponent();
+	UPickupComponent();
 protected:
 
-	/** Called when the game starts */
 	virtual void BeginPlay() override;
 
-	/** Code for when something overlaps this component */
 	UFUNCTION()
 	void OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

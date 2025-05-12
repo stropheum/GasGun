@@ -1,22 +1,22 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright 2025 Dale "Stropheum" Diaz
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "GasGunWeaponComponent.generated.h"
+#include "WeaponComponent.generated.h"
 
-class AGasGunCharacter;
+class APlayerCharacter;
 
 UCLASS(Blueprintable, BlueprintType, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class GASGUN_API UGasGunWeaponComponent : public USkeletalMeshComponent
+class GASGUN_API UWeaponComponent : public USkeletalMeshComponent
 {
 	GENERATED_BODY()
 
 public:
 	/** Projectile class to spawn */
 	UPROPERTY(EditDefaultsOnly, Category=Projectile)
-	TSubclassOf<class AGasGunProjectile> ProjectileClass;
+	TSubclassOf<class AProjectile> ProjectileClass;
 
 	/** Sound to play each time we fire */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
@@ -39,15 +39,17 @@ public:
 	class UInputAction* FireAction;
 
 	/** Sets default values for this component's properties */
-	UGasGunWeaponComponent();
+	UWeaponComponent();
 
 	/** Attaches the actor to a FirstPersonCharacter */
 	UFUNCTION(BlueprintCallable, Category="Weapon")
-	bool AttachWeapon(AGasGunCharacter* TargetCharacter);
+	bool AttachWeapon(APlayerCharacter* TargetCharacter);
 
 	/** Make the weapon Fire a Projectile */
 	UFUNCTION(BlueprintCallable, Category="Weapon")
 	void Fire();
+
+	FVector GetProjectileSpawnLocation() const;
 
 protected:
 	/** Ends gameplay for this component. */
@@ -56,5 +58,5 @@ protected:
 
 private:
 	/** The Character holding this weapon*/
-	AGasGunCharacter* Character;
+	APlayerCharacter* Character;
 };
