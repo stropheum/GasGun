@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "WeaponComponent.generated.h"
 
@@ -14,6 +15,9 @@ class GASGUN_API UWeaponComponent : public USkeletalMeshComponent
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditDefaultsOnly, Category = "Ability")
+	TSubclassOf<class UFireWeaponAbility> FireWeaponAbilityClass;
+	
 	/** Projectile class to spawn */
 	UPROPERTY(EditDefaultsOnly, Category=Projectile)
 	TSubclassOf<class AProjectile> ProjectileClass;
@@ -31,11 +35,11 @@ public:
 	FVector MuzzleOffset;
 
 	/** MappingContext */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	class UInputMappingContext* FireMappingContext;
 
 	/** Fire Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	class UInputAction* FireAction;
 
 	/** Sets default values for this component's properties */
@@ -55,6 +59,12 @@ protected:
 	/** Ends gameplay for this component. */
 	UFUNCTION()
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	UPROPERTY()
+	FGameplayAbilitySpecHandle FireAbilityHandle;
+
+	UPROPERTY()
+	UFireWeaponAbility* FireWeaponAbility;
 
 private:
 	/** The Character holding this weapon*/

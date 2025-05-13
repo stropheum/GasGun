@@ -1,7 +1,7 @@
 ﻿// Copyright 2025 Dale "Stropheum" Diaz
 
-#include "AbilitySystemComponent.h"
 #include "CharacterBase.h"
+#include "AbilitySystemComponent.h"
 
 
 ACharacterBase::ACharacterBase()

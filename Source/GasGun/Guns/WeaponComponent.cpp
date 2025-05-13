@@ -1,6 +1,8 @@
 // Copyright 2025 Dale "Stropheum" Diaz
 
 #include "WeaponComponent.h"
+
+#include "AbilitySystemComponent.h"
 #include "../Characters/PlayerCharacter.h"
 #include "Projectile.h"
 #include "GameFramework/PlayerController.h"
@@ -8,9 +10,11 @@
 #include "Kismet/GameplayStatics.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "GameplayAbilitySpec.h"
 #include "Animation/AnimInstance.h"
 #include "Engine/LocalPlayer.h"
 #include "Engine/World.h"
+#include "GasGun/AbilitySystem/Abilities/FireWeaponAbility.h"
 
 // Sets default values for this component's properties
 UWeaponComponent::UWeaponComponent()
@@ -85,6 +89,14 @@ bool UWeaponComponent::AttachWeapon(APlayerCharacter* TargetCharacter)
 	// Attach the weapon to the First Person Character
 	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
 	AttachToComponent(Character->GetMesh1P(), AttachmentRules, FName(TEXT("GripPoint")));
+
+	if (FireWeaponAbilityClass && Character->GetAbilitySystemComponent())
+	{
+		const FGameplayAbilitySpec AbilitySpec(FireWeaponAbilityClass, 1, -1, this);
+		FireAbilityHandle = Character->GetAbilitySystemComponent()->GiveAbility(AbilitySpec);
+		FireWeaponAbility = Cast<UFireWeaponAbility>(AbilitySpec.Ability);
+		check(FireWeaponAbility);
+	}
 
 	// Set up action bindings
 	if (APlayerController* PlayerController = Cast<APlayerController>(Character->GetController()))

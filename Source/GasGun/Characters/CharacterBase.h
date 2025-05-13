@@ -4,10 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "AbilitySystemInterface.h"
 #include "CharacterBase.generated.h"
 
+class UAbilitySystemComponent;
+
 UCLASS()
-class GASGUN_API ACharacterBase : public ACharacter
+class GASGUN_API ACharacterBase : public ACharacter, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -22,7 +25,9 @@ public:
 
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return AbilitySystemComponent; }
+
 protected:
 	UPROPERTY()
-	class UAbilitySystemComponent* AbilitySystemComponent = nullptr;
+	UAbilitySystemComponent* AbilitySystemComponent = nullptr;
 };
