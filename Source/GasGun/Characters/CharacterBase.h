@@ -5,8 +5,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
+#include "GameplayEffectTypes.h"
 #include "CharacterBase.generated.h"
 
+class UCharacterBaseAttributeSet;
+class UAttributeSetBase;
 class UAbilitySystemComponent;
 
 UCLASS()
@@ -18,6 +21,12 @@ public:
 	ACharacterBase();
 
 protected:
+	void OnHealthChangeCallback(const FOnAttributeChangeData& OnAttributeChangeData);
+	void OnMaxHealthChangeCallback(const FOnAttributeChangeData& OnAttributeChangeData);
+	void OnShieldChangeCallback(const FOnAttributeChangeData& OnAttributeChangeData);
+	void OnMaxShieldChangeCallback(const FOnAttributeChangeData& OnAttributeChangeData);
+	void OnShieldRegenRateChangeCallback(const FOnAttributeChangeData& OnAttributeChangeData);
+	void OnShieldRegenDelayChangeCallback(const FOnAttributeChangeData& OnAttributeChangeData);
 	virtual void BeginPlay() override;
 
 public:
@@ -30,4 +39,7 @@ public:
 protected:
 	UPROPERTY()
 	UAbilitySystemComponent* AbilitySystemComponent{};
+
+	UPROPERTY()
+	UCharacterBaseAttributeSet* AttributeSet{};
 };

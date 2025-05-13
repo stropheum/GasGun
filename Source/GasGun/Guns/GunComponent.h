@@ -55,7 +55,7 @@ protected:
 	FGameplayAbilitySpecHandle FireAbilityHandle;
 
 	UPROPERTY()
-	UFireGunAbility* FireWeaponAbility{};
+	UFireGunAbility* FireGunAbility{};
 
 private:
 	TWeakObjectPtr<APlayerCharacter> CharacterWeakPtr{};

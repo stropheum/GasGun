@@ -26,38 +26,56 @@ void UGunComponent::Fire()
 {
 	if (!CharacterWeakPtr.IsValid() || CharacterWeakPtr->GetController() == nullptr)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Attempted to fire with improper conditions"));
 		return;
 	}
 
-	if (ProjectileClass != nullptr)
+	if (!FireAbilityHandle.IsValid() || !FireGunAbility)
 	{
-		UWorld* const World = GetWorld();
-		if (World != nullptr)
-		{
-			APlayerController* PlayerController = Cast<APlayerController>(CharacterWeakPtr->GetController());
-			const FRotator SpawnRotation = PlayerController->PlayerCameraManager->GetCameraRotation();
-			// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
-			const FVector SpawnLocation = GetOwner()->GetActorLocation() + SpawnRotation.RotateVector(MuzzleOffset);
-
-			FActorSpawnParameters ActorSpawnParams;
-			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
-			World->SpawnActor<AProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
-		}
+		UE_LOG(LogTemp, Warning, TEXT("No FireRifleAbility set"));
+		return;
 	}
 
-	if (FireSound != nullptr)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, FireSound, CharacterWeakPtr->GetActorLocation());
-	}
+	UAbilitySystemComponent* Asc = CharacterWeakPtr->GetAbilitySystemComponent();
+	FGameplayAbilitySpec* AbilitySpec = Asc->FindAbilitySpecFromHandle(FireAbilityHandle);
+	ensureMsgf(AbilitySpec, TEXT("Ability spec not found for fire ability handle"));
 
-	if (FireAnimation != nullptr)
-	{
-		UAnimInstance* AnimInstance = CharacterWeakPtr->GetMesh1P()->GetAnimInstance();
-		if (AnimInstance != nullptr)
-		{
-			AnimInstance->Montage_Play(FireAnimation, 1.f);
-		}
-	}
+	// const FGameplayTag Tag = FGameplayTag::RequestGameplayTag(IsTriggered
+	// 															  ? FName("Weapon.Trigger.Triggered")
+	// 															  : FName("Weapon.Trigger.Ongoing"));
+
+	// AbilitySpec->GetDynamicSpecSourceTags().AddTag(Tag);
+	Asc->TryActivateAbility(FireAbilityHandle);
+
+	// if (ProjectileClass != nullptr)
+	// {
+	// 	UWorld* const World = GetWorld();
+	// 	if (World != nullptr)
+	// 	{
+	// 		APlayerController* PlayerController = Cast<APlayerController>(CharacterWeakPtr->GetController());
+	// 		const FRotator SpawnRotation = PlayerController->PlayerCameraManager->GetCameraRotation();
+	// 		// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
+	// 		const FVector SpawnLocation = GetOwner()->GetActorLocation() + SpawnRotation.RotateVector(MuzzleOffset);
+	//
+	// 		FActorSpawnParameters ActorSpawnParams;
+	// 		ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+	// 		World->SpawnActor<AProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+	// 	}
+	// }
+	//
+	// if (FireSound != nullptr)
+	// {
+	// 	UGameplayStatics::PlaySoundAtLocation(this, FireSound, CharacterWeakPtr->GetActorLocation());
+	// }
+	//
+	// if (FireAnimation != nullptr)
+	// {
+	// 	UAnimInstance* AnimInstance = CharacterWeakPtr->GetMesh1P()->GetAnimInstance();
+	// 	if (AnimInstance != nullptr)
+	// 	{
+	// 		AnimInstance->Montage_Play(FireAnimation, 1.f);
+	// 	}
+	// }
 }
 
 FVector UGunComponent::GetProjectileSpawnLocation() const
@@ -83,8 +101,8 @@ bool UGunComponent::AttachWeapon(APlayerCharacter* TargetCharacter)
 	{
 		const FGameplayAbilitySpec AbilitySpec(FireWeaponAbilityClass, 1, -1, this);
 		FireAbilityHandle = CharacterWeakPtr->GetAbilitySystemComponent()->GiveAbility(AbilitySpec);
-		FireWeaponAbility = Cast<UFireGunAbility>(AbilitySpec.Ability);
-		check(FireWeaponAbility);
+		FireGunAbility = Cast<UFireGunAbility>(AbilitySpec.Ability);
+		check(FireGunAbility);
 	}
 
 	if (const APlayerController* PlayerController = Cast<APlayerController>(CharacterWeakPtr->GetController()))
