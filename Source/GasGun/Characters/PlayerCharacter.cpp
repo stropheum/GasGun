@@ -1,7 +1,6 @@
 // Copyright 2025 Dale "Stropheum" Diaz
 
 #include "PlayerCharacter.h"
-#include "../Guns/Projectile.h"
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -10,7 +9,6 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Engine/LocalPlayer.h"
-#include "GasGun/Guns/GunComponent.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 

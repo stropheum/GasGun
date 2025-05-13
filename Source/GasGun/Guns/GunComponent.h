@@ -21,9 +21,12 @@ public:
 	bool AttachWeapon(APlayerCharacter* TargetCharacter);
 
 	UFUNCTION(BlueprintCallable, Category="Weapon")
-	void Fire();
+	void ActivateFireAbility();
 
-	FVector GetProjectileSpawnLocation() const;
+	UFUNCTION(BlueprintCallable, Category="Weapon")
+	void DeactivateFireAbility();
+	
+	TTuple<FVector, FRotator> GetProjectileSpawnPositionRotation() const;
 
 protected:
 	UFUNCTION()

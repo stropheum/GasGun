@@ -28,10 +28,10 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 	UFUNCTION()
-	UGunComponent* GetWeapon() const { return EquippedWeapon; }
+	UGunComponent* GetGun() const { return EquippedGun; }
 
 	UFUNCTION()
-	void SetWeapon(UGunComponent* Weapon) { EquippedWeapon = Weapon; }
+	void SetGun(UGunComponent* Weapon) { EquippedGun = Weapon; }
 
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
 
@@ -66,5 +66,5 @@ protected:
 	UInputAction* LookAction{};
 
 	UPROPERTY()
-	UGunComponent* EquippedWeapon{};
+	UGunComponent* EquippedGun{};
 };

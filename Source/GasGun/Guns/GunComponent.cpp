@@ -19,7 +19,7 @@ UGunComponent::UGunComponent()
 	MuzzleOffset = FVector(56.5f, 14.25f, 11.3f);
 }
 
-void UGunComponent::Fire()
+void UGunComponent::ActivateFireAbility()
 {
 	if (!CharacterWeakPtr.IsValid() || CharacterWeakPtr->GetController() == nullptr)
 	{
@@ -40,11 +40,24 @@ void UGunComponent::Fire()
 	Asc->TryActivateAbility(FireAbilityHandle);
 }
 
-FVector UGunComponent::GetProjectileSpawnLocation() const
+void UGunComponent::DeactivateFireAbility()
+{
+	if (!FireAbilityHandle.IsValid() || !FireGunAbility)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No FireRifleAbility set"));
+		return;
+	}
+
+	UAbilitySystemComponent* Asc = CharacterWeakPtr->GetAbilitySystemComponent();
+	Asc->CancelAbilityHandle(FireAbilityHandle);
+}
+
+TTuple<FVector, FRotator> UGunComponent::GetProjectileSpawnPositionRotation() const
 {
 	const APlayerController* PlayerController = Cast<APlayerController>(CharacterWeakPtr->GetController());
 	const FRotator SpawnRotation = PlayerController->PlayerCameraManager->GetCameraRotation();
-	return GetOwner()->GetActorLocation() + SpawnRotation.RotateVector(MuzzleOffset);
+	const FVector SpawnPosition = GetOwner()->GetActorLocation() + SpawnRotation.RotateVector(MuzzleOffset);
+	return {SpawnPosition, SpawnRotation};
 }
 
 bool UGunComponent::AttachWeapon(APlayerCharacter* TargetCharacter)
@@ -71,7 +84,7 @@ bool UGunComponent::AttachWeapon(APlayerCharacter* TargetCharacter)
 	{
 		if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(CharacterWeakPtr))
 		{
-			PlayerCharacter->SetWeapon(this);
+			PlayerCharacter->SetGun(this);
 		}
 
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
@@ -81,7 +94,9 @@ bool UGunComponent::AttachWeapon(APlayerCharacter* TargetCharacter)
 
 		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerController->InputComponent))
 		{
-			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &UGunComponent::Fire);
+			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &UGunComponent::ActivateFireAbility);
+			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &UGunComponent::DeactivateFireAbility);
+			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &UGunComponent::DeactivateFireAbility);
 		}
 	}
 
