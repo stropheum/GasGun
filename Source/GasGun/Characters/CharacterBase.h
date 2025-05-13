@@ -29,5 +29,5 @@ public:
 
 protected:
 	UPROPERTY()
-	UAbilitySystemComponent* AbilitySystemComponent = nullptr;
+	UAbilitySystemComponent* AbilitySystemComponent{};
 };
