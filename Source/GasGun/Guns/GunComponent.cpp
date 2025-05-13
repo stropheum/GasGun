@@ -19,7 +19,6 @@ UGunComponent::UGunComponent()
 	MuzzleOffset = FVector(56.5f, 14.25f, 11.3f);
 }
 
-
 void UGunComponent::Fire()
 {
 	if (!CharacterWeakPtr.IsValid() || CharacterWeakPtr->GetController() == nullptr)
@@ -35,7 +34,7 @@ void UGunComponent::Fire()
 	}
 
 	UAbilitySystemComponent* Asc = CharacterWeakPtr->GetAbilitySystemComponent();
-	const FGameplayAbilitySpec* AbilitySpec = Asc->FindAbilitySpecFromHandle(FireAbilityHandle);
+	FGameplayAbilitySpec* AbilitySpec = Asc->FindAbilitySpecFromHandle(FireAbilityHandle);
 	ensureMsgf(AbilitySpec, TEXT("Ability spec not found for fire ability handle"));
 
 	Asc->TryActivateAbility(FireAbilityHandle);

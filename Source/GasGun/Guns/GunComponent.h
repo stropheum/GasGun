@@ -32,15 +32,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Ability", meta=(AllowPrivateAccess=true))
 	TSubclassOf<class UFireGunAbility> FireWeaponAbilityClass;
 
-	UPROPERTY(EditDefaultsOnly, Category=Projectile, meta=(AllowPrivateAccess=true))
-	TSubclassOf<class AProjectile> ProjectileClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay, meta=(AllowPrivateAccess=true))
-	USoundBase* FireSound{};
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay, meta=(AllowPrivateAccess=true))
-	UAnimMontage* FireAnimation{};
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay, meta=(AllowPrivateAccess=true))
 	FVector MuzzleOffset;
 
