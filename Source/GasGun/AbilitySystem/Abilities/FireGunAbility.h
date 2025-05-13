@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
-#include "FireWeaponAbility.generated.h"
+#include "FireGunAbility.generated.h"
 
 /**
  * Base Gameplay Ability for firing all weapons
  */
 UCLASS()
-class GASGUN_API UFireWeaponAbility : public UGameplayAbility
+class GASGUN_API UFireGunAbility : public UGameplayAbility
 {
 	GENERATED_BODY()
 };

@@ -5,17 +5,17 @@
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "WeaponComponent.generated.h"
+#include "GunComponent.generated.h"
 
 class APlayerCharacter;
 
 UCLASS(Blueprintable, BlueprintType, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class GASGUN_API UWeaponComponent : public USkeletalMeshComponent
+class GASGUN_API UGunComponent : public USkeletalMeshComponent
 {
 	GENERATED_BODY()
 
 public:
-	UWeaponComponent();
+	UGunComponent();
 
 	UFUNCTION(BlueprintCallable, Category="Weapon")
 	bool AttachWeapon(APlayerCharacter* TargetCharacter);
@@ -31,7 +31,7 @@ protected:
 
 
 	UPROPERTY(EditDefaultsOnly, Category = "Ability", meta=(AllowPrivateAccess=true))
-	TSubclassOf<class UFireWeaponAbility> FireWeaponAbilityClass;
+	TSubclassOf<class UFireGunAbility> FireWeaponAbilityClass;
 
 	UPROPERTY(EditDefaultsOnly, Category=Projectile, meta=(AllowPrivateAccess=true))
 	TSubclassOf<class AProjectile> ProjectileClass;
@@ -55,7 +55,7 @@ protected:
 	FGameplayAbilitySpecHandle FireAbilityHandle;
 
 	UPROPERTY()
-	UFireWeaponAbility* FireWeaponAbility{};
+	UFireGunAbility* FireWeaponAbility{};
 
 private:
 	TWeakObjectPtr<APlayerCharacter> CharacterWeakPtr{};

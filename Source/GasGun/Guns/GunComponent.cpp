@@ -1,6 +1,6 @@
 // Copyright 2025 Dale "Stropheum" Diaz
 
-#include "WeaponComponent.h"
+#include "GunComponent.h"
 
 #include "AbilitySystemComponent.h"
 #include "../Characters/PlayerCharacter.h"
@@ -14,15 +14,15 @@
 #include "Animation/AnimInstance.h"
 #include "Engine/LocalPlayer.h"
 #include "Engine/World.h"
-#include "GasGun/AbilitySystem/Abilities/FireWeaponAbility.h"
+#include "GasGun/AbilitySystem/Abilities/FireGunAbility.h"
 
-UWeaponComponent::UWeaponComponent()
+UGunComponent::UGunComponent()
 {
 	MuzzleOffset = FVector(56.5f, 14.25f, 11.3f);
 }
 
 
-void UWeaponComponent::Fire()
+void UGunComponent::Fire()
 {
 	if (!CharacterWeakPtr.IsValid() || CharacterWeakPtr->GetController() == nullptr)
 	{
@@ -60,18 +60,18 @@ void UWeaponComponent::Fire()
 	}
 }
 
-FVector UWeaponComponent::GetProjectileSpawnLocation() const
+FVector UGunComponent::GetProjectileSpawnLocation() const
 {
 	const APlayerController* PlayerController = Cast<APlayerController>(CharacterWeakPtr->GetController());
 	const FRotator SpawnRotation = PlayerController->PlayerCameraManager->GetCameraRotation();
 	return GetOwner()->GetActorLocation() + SpawnRotation.RotateVector(MuzzleOffset);
 }
 
-bool UWeaponComponent::AttachWeapon(APlayerCharacter* TargetCharacter)
+bool UGunComponent::AttachWeapon(APlayerCharacter* TargetCharacter)
 {
 	CharacterWeakPtr = TargetCharacter;
 
-	if (CharacterWeakPtr == nullptr || CharacterWeakPtr->GetInstanceComponents().FindItemByClass<UWeaponComponent>())
+	if (CharacterWeakPtr == nullptr || CharacterWeakPtr->GetInstanceComponents().FindItemByClass<UGunComponent>())
 	{
 		return false;
 	}
@@ -83,7 +83,7 @@ bool UWeaponComponent::AttachWeapon(APlayerCharacter* TargetCharacter)
 	{
 		const FGameplayAbilitySpec AbilitySpec(FireWeaponAbilityClass, 1, -1, this);
 		FireAbilityHandle = CharacterWeakPtr->GetAbilitySystemComponent()->GiveAbility(AbilitySpec);
-		FireWeaponAbility = Cast<UFireWeaponAbility>(AbilitySpec.Ability);
+		FireWeaponAbility = Cast<UFireGunAbility>(AbilitySpec.Ability);
 		check(FireWeaponAbility);
 	}
 
@@ -101,14 +101,14 @@ bool UWeaponComponent::AttachWeapon(APlayerCharacter* TargetCharacter)
 
 		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerController->InputComponent))
 		{
-			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &UWeaponComponent::Fire);
+			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &UGunComponent::Fire);
 		}
 	}
 
 	return true;
 }
 
-void UWeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void UGunComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	if (CharacterWeakPtr.IsValid())
 	{

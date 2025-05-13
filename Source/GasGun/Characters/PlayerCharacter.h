@@ -7,7 +7,7 @@
 #include "Logging/LogMacros.h"
 #include "PlayerCharacter.generated.h"
 
-class UWeaponComponent;
+class UGunComponent;
 class UInputComponent;
 class USkeletalMeshComponent;
 class UCameraComponent;
@@ -28,10 +28,10 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 
 	UFUNCTION()
-	UWeaponComponent* GetWeapon() const { return EquippedWeapon; }
+	UGunComponent* GetWeapon() const { return EquippedWeapon; }
 
 	UFUNCTION()
-	void SetWeapon(UWeaponComponent* Weapon) { EquippedWeapon = Weapon; }
+	void SetWeapon(UGunComponent* Weapon) { EquippedWeapon = Weapon; }
 
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
 
@@ -66,5 +66,5 @@ protected:
 	UInputAction* LookAction{};
 
 	UPROPERTY()
-	UWeaponComponent* EquippedWeapon{};
+	UGunComponent* EquippedWeapon{};
 };
