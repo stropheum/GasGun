@@ -4,10 +4,8 @@
 
 #include "AbilitySystemComponent.h"
 #include "../Characters/PlayerCharacter.h"
-#include "Projectile.h"
 #include "GameFramework/PlayerController.h"
 #include "Camera/PlayerCameraManager.h"
-#include "Kismet/GameplayStatics.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameplayAbilitySpec.h"
@@ -37,45 +35,10 @@ void UGunComponent::Fire()
 	}
 
 	UAbilitySystemComponent* Asc = CharacterWeakPtr->GetAbilitySystemComponent();
-	FGameplayAbilitySpec* AbilitySpec = Asc->FindAbilitySpecFromHandle(FireAbilityHandle);
+	const FGameplayAbilitySpec* AbilitySpec = Asc->FindAbilitySpecFromHandle(FireAbilityHandle);
 	ensureMsgf(AbilitySpec, TEXT("Ability spec not found for fire ability handle"));
 
-	// const FGameplayTag Tag = FGameplayTag::RequestGameplayTag(IsTriggered
-	// 															  ? FName("Weapon.Trigger.Triggered")
-	// 															  : FName("Weapon.Trigger.Ongoing"));
-
-	// AbilitySpec->GetDynamicSpecSourceTags().AddTag(Tag);
 	Asc->TryActivateAbility(FireAbilityHandle);
-
-	// if (ProjectileClass != nullptr)
-	// {
-	// 	UWorld* const World = GetWorld();
-	// 	if (World != nullptr)
-	// 	{
-	// 		APlayerController* PlayerController = Cast<APlayerController>(CharacterWeakPtr->GetController());
-	// 		const FRotator SpawnRotation = PlayerController->PlayerCameraManager->GetCameraRotation();
-	// 		// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
-	// 		const FVector SpawnLocation = GetOwner()->GetActorLocation() + SpawnRotation.RotateVector(MuzzleOffset);
-	//
-	// 		FActorSpawnParameters ActorSpawnParams;
-	// 		ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
-	// 		World->SpawnActor<AProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
-	// 	}
-	// }
-	//
-	// if (FireSound != nullptr)
-	// {
-	// 	UGameplayStatics::PlaySoundAtLocation(this, FireSound, CharacterWeakPtr->GetActorLocation());
-	// }
-	//
-	// if (FireAnimation != nullptr)
-	// {
-	// 	UAnimInstance* AnimInstance = CharacterWeakPtr->GetMesh1P()->GetAnimInstance();
-	// 	if (AnimInstance != nullptr)
-	// 	{
-	// 		AnimInstance->Montage_Play(FireAnimation, 1.f);
-	// 	}
-	// }
 }
 
 FVector UGunComponent::GetProjectileSpawnLocation() const

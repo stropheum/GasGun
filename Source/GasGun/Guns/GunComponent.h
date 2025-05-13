@@ -29,7 +29,6 @@ protected:
 	UFUNCTION()
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-
 	UPROPERTY(EditDefaultsOnly, Category = "Ability", meta=(AllowPrivateAccess=true))
 	TSubclassOf<class UFireGunAbility> FireWeaponAbilityClass;
 
