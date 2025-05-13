@@ -68,5 +68,5 @@ protected:
 
 private:
 	/** The Character holding this weapon*/
-	APlayerCharacter* Character;
+	TWeakObjectPtr<APlayerCharacter> CharacterWeakPtr;
 };

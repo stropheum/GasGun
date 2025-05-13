@@ -26,7 +26,7 @@ UWeaponComponent::UWeaponComponent()
 
 void UWeaponComponent::Fire()
 {
-	if (Character == nullptr || Character->GetController() == nullptr)
+	if (!CharacterWeakPtr.IsValid() || CharacterWeakPtr->GetController() == nullptr)
 	{
 		return;
 	}
@@ -37,7 +37,7 @@ void UWeaponComponent::Fire()
 		UWorld* const World = GetWorld();
 		if (World != nullptr)
 		{
-			APlayerController* PlayerController = Cast<APlayerController>(Character->GetController());
+			APlayerController* PlayerController = Cast<APlayerController>(CharacterWeakPtr->GetController());
 			const FRotator SpawnRotation = PlayerController->PlayerCameraManager->GetCameraRotation();
 			// MuzzleOffset is in camera space, so transform it to world space before offsetting from the character location to find the final muzzle position
 			const FVector SpawnLocation = GetOwner()->GetActorLocation() + SpawnRotation.RotateVector(MuzzleOffset);
@@ -54,14 +54,14 @@ void UWeaponComponent::Fire()
 	// Try and play the sound if specified
 	if (FireSound != nullptr)
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, FireSound, Character->GetActorLocation());
+		UGameplayStatics::PlaySoundAtLocation(this, FireSound, CharacterWeakPtr->GetActorLocation());
 	}
 	
 	// Try and play a firing animation if specified
 	if (FireAnimation != nullptr)
 	{
 		// Get the animation object for the arms mesh
-		UAnimInstance* AnimInstance = Character->GetMesh1P()->GetAnimInstance();
+		UAnimInstance* AnimInstance = CharacterWeakPtr->GetMesh1P()->GetAnimInstance();
 		if (AnimInstance != nullptr)
 		{
 			AnimInstance->Montage_Play(FireAnimation, 1.f);
@@ -71,37 +71,37 @@ void UWeaponComponent::Fire()
 
 FVector UWeaponComponent::GetProjectileSpawnLocation() const
 {
-	const APlayerController* PlayerController = Cast<APlayerController>(Character->GetController());
+	const APlayerController* PlayerController = Cast<APlayerController>(CharacterWeakPtr->GetController());
 	const FRotator SpawnRotation = PlayerController->PlayerCameraManager->GetCameraRotation();
 	return GetOwner()->GetActorLocation() + SpawnRotation.RotateVector(MuzzleOffset);
 }
 
 bool UWeaponComponent::AttachWeapon(APlayerCharacter* TargetCharacter)
 {
-	Character = TargetCharacter;
+	CharacterWeakPtr = TargetCharacter;
 
 	// Check that the character is valid, and has no weapon component yet
-	if (Character == nullptr || Character->GetInstanceComponents().FindItemByClass<UWeaponComponent>())
+	if (CharacterWeakPtr == nullptr || CharacterWeakPtr->GetInstanceComponents().FindItemByClass<UWeaponComponent>())
 	{
 		return false;
 	}
 
 	// Attach the weapon to the First Person Character
 	FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
-	AttachToComponent(Character->GetMesh1P(), AttachmentRules, FName(TEXT("GripPoint")));
+	AttachToComponent(CharacterWeakPtr->GetMesh1P(), AttachmentRules, FName(TEXT("GripPoint")));
 
-	if (FireWeaponAbilityClass && Character->GetAbilitySystemComponent())
+	if (FireWeaponAbilityClass && CharacterWeakPtr->GetAbilitySystemComponent())
 	{
 		const FGameplayAbilitySpec AbilitySpec(FireWeaponAbilityClass, 1, -1, this);
-		FireAbilityHandle = Character->GetAbilitySystemComponent()->GiveAbility(AbilitySpec);
+		FireAbilityHandle = CharacterWeakPtr->GetAbilitySystemComponent()->GiveAbility(AbilitySpec);
 		FireWeaponAbility = Cast<UFireWeaponAbility>(AbilitySpec.Ability);
 		check(FireWeaponAbility);
 	}
 
 	// Set up action bindings
-	if (APlayerController* PlayerController = Cast<APlayerController>(Character->GetController()))
+	if (APlayerController* PlayerController = Cast<APlayerController>(CharacterWeakPtr->GetController()))
 	{
-		if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(Character))
+		if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(CharacterWeakPtr))
 		{
 			PlayerCharacter->SetWeapon(this);	
 		}
@@ -125,10 +125,10 @@ bool UWeaponComponent::AttachWeapon(APlayerCharacter* TargetCharacter)
 void UWeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	// ensure we have a character owner
-	if (Character != nullptr)
+	if (CharacterWeakPtr != nullptr)
 	{
 		// remove the input mapping context from the Player Controller
-		if (APlayerController* PlayerController = Cast<APlayerController>(Character->GetController()))
+		if (APlayerController* PlayerController = Cast<APlayerController>(CharacterWeakPtr->GetController()))
 		{
 			if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 			{
