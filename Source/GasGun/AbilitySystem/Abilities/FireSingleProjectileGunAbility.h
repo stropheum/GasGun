@@ -3,14 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Abilities/GameplayAbility.h"
-#include "FireGunAbility.generated.h"
+#include "FireGunAbility_Base.h"
+#include "UObject/Object.h"
+#include "FireSingleProjectileGunAbility.generated.h"
 
 /**
- * Base Gameplay Ability for firing all weapons
+ * Gameplay ability to handle firing for single fire weapons that shoot physical projectiles
  */
 UCLASS()
-class GASGUN_API UFireGunAbility : public UGameplayAbility
+class GASGUN_API UFireSingleProjectileGunAbility : public UFireGunAbility_Base
 {
 	GENERATED_BODY()
 
@@ -40,14 +41,4 @@ public:
 		const FGameplayAbilityActivationInfo ActivationInfo,
 		bool bReplicateEndAbility,
 		bool bWasCancelled) override;
-
-protected:
-	UPROPERTY(EditDefaultsOnly, Category=Projectile, meta=(AllowPrivateAccess=true))
-	TSubclassOf<class AProjectile> ProjectileClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay, meta=(AllowPrivateAccess=true))
-	USoundBase* FireSound{};
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay, meta=(AllowPrivateAccess=true))
-	UAnimMontage* FireAnimation{};
 };

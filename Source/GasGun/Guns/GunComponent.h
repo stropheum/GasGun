@@ -33,7 +33,7 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Ability", meta=(AllowPrivateAccess=true))
-	TSubclassOf<class UFireGunAbility> FireWeaponAbilityClass;
+	TSubclassOf<class UFireGunAbility_Base> FireWeaponAbilityClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay, meta=(AllowPrivateAccess=true))
 	FVector MuzzleOffset;
@@ -48,7 +48,7 @@ protected:
 	FGameplayAbilitySpecHandle FireAbilityHandle;
 
 	UPROPERTY()
-	UFireGunAbility* FireGunAbility{};
+	UFireGunAbility_Base* FireGunAbility{};
 
 private:
 	TWeakObjectPtr<APlayerCharacter> CharacterWeakPtr{};

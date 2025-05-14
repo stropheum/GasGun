@@ -20,6 +20,9 @@ class GASGUN_API ACharacterBase : public ACharacter, public IAbilitySystemInterf
 public:
 	ACharacterBase();
 
+	UFUNCTION()
+	UGameplayTasksComponent* GetGameplayTasksComponent() const { return GameplayTasksComponent; }
+
 protected:
 	void OnHealthChangeCallback(const FOnAttributeChangeData& OnAttributeChangeData);
 	void OnMaxHealthChangeCallback(const FOnAttributeChangeData& OnAttributeChangeData);
@@ -42,4 +45,7 @@ protected:
 
 	UPROPERTY()
 	UCharacterBaseAttributeSet* AttributeSet{};
+
+	UPROPERTY()
+	UGameplayTasksComponent* GameplayTasksComponent{};
 };

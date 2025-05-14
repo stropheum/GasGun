@@ -9,37 +9,32 @@ ACharacterBase::ACharacterBase()
 {
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>("AbilitySystemComponent");
 	AttributeSet = CreateDefaultSubobject<UCharacterBaseAttributeSet>("AttributeSet");
+	GameplayTasksComponent = CreateDefaultSubobject<UGameplayTasksComponent>("GameplayTasksComponent");
 	PrimaryActorTick.bCanEverTick = true;
 }
 
 void ACharacterBase::OnHealthChangeCallback(const FOnAttributeChangeData& OnAttributeChangeData)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("ACharacterBase::OnHealthChangeCallback"));
 }
 
 void ACharacterBase::OnMaxHealthChangeCallback(const FOnAttributeChangeData& OnAttributeChangeData)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("ACharacterBase::OnMaxHealthChangeCallback"));
 }
 
 void ACharacterBase::OnShieldChangeCallback(const FOnAttributeChangeData& OnAttributeChangeData)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("ACharacterBase::OnShieldChangeCallback"));
 }
 
 void ACharacterBase::OnMaxShieldChangeCallback(const FOnAttributeChangeData& OnAttributeChangeData)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("ACharacterBase::OnMaxShieldChangeCallback"));
 }
 
 void ACharacterBase::OnShieldRegenRateChangeCallback(const FOnAttributeChangeData& OnAttributeChangeData)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("ACharacterBase::OnShieldRegenRateChangeCallback"));
 }
 
 void ACharacterBase::OnShieldRegenDelayChangeCallback(const FOnAttributeChangeData& OnAttributeChangeData)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, TEXT("ACharacterBase::OnShieldRegenDelayChangeCallback"));
 }
 
 void ACharacterBase::BeginPlay()
@@ -47,7 +42,7 @@ void ACharacterBase::BeginPlay()
 	Super::BeginPlay();
 	check(AbilitySystemComponent);
 	check(AttributeSet);
-
+	
 	AbilitySystemComponent->AddAttributeSetSubobject(AttributeSet);
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute())
 	                      .AddUObject(this, &ACharacterBase::OnHealthChangeCallback);

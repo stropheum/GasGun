@@ -3,15 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "FireGunAbility.h"
-#include "UObject/Object.h"
-#include "FireProjectileGunAbility.generated.h"
+#include "FireGunAbility_Base.h"
+#include "Abilities/GameplayAbility.h"
+#include "FireAutoProjectileGunAbility.generated.h"
 
+class UProjectileAutoFireTask;
 /**
- * Gameplay ability to handle firing for weapons that shoot physical projectiles
+ * Gameplay ability to handle firing for automatic weapons that shoot physical projectiles
  */
 UCLASS()
-class GASGUN_API UFireProjectileGunAbility : public UFireGunAbility
+class GASGUN_API UFireAutoProjectileGunAbility : public UFireGunAbility_Base
 {
 	GENERATED_BODY()
 
@@ -40,5 +41,12 @@ public:
 		const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo,
 		bool bReplicateEndAbility,
-		bool bWasCancelled) override; 
+		bool bWasCancelled) override;
+
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="Abilities", meta = (AllowPrivateAccess = "true"))
+	float FireRate = 0.1f;
+
+	UPROPERTY()
+	UProjectileAutoFireTask* AutoFireTask{};
 };

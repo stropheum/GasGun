@@ -12,7 +12,7 @@
 #include "Animation/AnimInstance.h"
 #include "Engine/LocalPlayer.h"
 #include "Engine/World.h"
-#include "GasGun/AbilitySystem/Abilities/FireGunAbility.h"
+#include "GasGun/AbilitySystem/Abilities/FireGunAbility_Base.h"
 
 UGunComponent::UGunComponent()
 {
@@ -76,7 +76,7 @@ bool UGunComponent::AttachWeapon(APlayerCharacter* TargetCharacter)
 	{
 		const FGameplayAbilitySpec AbilitySpec(FireWeaponAbilityClass, 1, -1, this);
 		FireAbilityHandle = CharacterWeakPtr->GetAbilitySystemComponent()->GiveAbility(AbilitySpec);
-		FireGunAbility = Cast<UFireGunAbility>(AbilitySpec.Ability);
+		FireGunAbility = Cast<UFireGunAbility_Base>(AbilitySpec.Ability);
 		check(FireGunAbility);
 	}
 
@@ -95,7 +95,6 @@ bool UGunComponent::AttachWeapon(APlayerCharacter* TargetCharacter)
 		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerController->InputComponent))
 		{
 			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &UGunComponent::ActivateFireAbility);
-			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &UGunComponent::DeactivateFireAbility);
 			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &UGunComponent::DeactivateFireAbility);
 		}
 	}

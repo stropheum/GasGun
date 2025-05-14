@@ -1,0 +1,40 @@
+﻿// Copyright 2025 Dale "Stropheum" Diaz
+
+
+#include "FireGunAbility_Projectile.h"
+
+#include "GasGun/Characters/PlayerCharacter.h"
+#include "GasGun/Guns/GunComponent.h"
+#include "GasGun/Guns/Projectile.h"
+#include "Kismet/GameplayStatics.h"
+
+void UFireGunAbility_Projectile::Fire()
+{
+	Super::Fire();
+
+	check(ProjectileClass);
+
+	UWorld* const World = GetWorld();
+	check(World);
+
+	const FGameplayAbilityActorInfo ActorInfo = GetActorInfo();
+	const TWeakObjectPtr<AActor> Actor = ActorInfo.AvatarActor;
+	checkf(Actor.IsValid(), TEXT("Actor is invalid when attempting to activate FireProjectileGunAbility"));
+	checkf(FireAnimation != nullptr, TEXT("FireAnimation == nullptr"));
+	checkf(FireSound != nullptr, TEXT("FireSound == nullptr"));
+	
+	const APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(Actor);
+	const UGunComponent* Gun = PlayerCharacter->GetGun();
+	checkf(Gun != nullptr, TEXT("Attempting to activate FireProjectileGunAbility when Gun == nullptr"));
+	
+	const TTuple<FVector, FRotator> SpawnLocationRotation = Gun->GetProjectileSpawnPositionRotation();
+	FActorSpawnParameters ActorSpawnParams;
+	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+	World->SpawnActor<AProjectile>(ProjectileClass, SpawnLocationRotation.Key, SpawnLocationRotation.Value, ActorSpawnParams);
+	
+	UGameplayStatics::PlaySoundAtLocation(this, FireSound, SpawnLocationRotation.Key);
+	if (UAnimInstance* AnimInstance = PlayerCharacter->GetMesh1P()->GetAnimInstance(); AnimInstance != nullptr)
+	{
+		AnimInstance->Montage_Play(FireAnimation, 1.f);
+	}
+}
