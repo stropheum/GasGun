@@ -17,7 +17,8 @@ public class GasGun : ModuleRules
 			"EnhancedInput", 
 			"GameplayAbilities", 
 			"GameplayTasks", 
-			"GameplayTags"
+			"GameplayTags",
+			"Niagara"
 		});
 	}
 }
