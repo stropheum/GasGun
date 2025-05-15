@@ -6,11 +6,54 @@
 #include "FireGunAbility_Base.h"
 #include "FireGunAbility_Beam.generated.h"
 
+class UNiagaraComponent;
+class UNiagaraSystem;
+class UNiagaraAsset;
+
 /**
- * 
+ * Base Gameplay Ability for firing beam-based weapons
  */
 UCLASS()
 class GASGUN_API UFireGunAbility_Beam : public UFireGunAbility_Base
 {
 	GENERATED_BODY()
+	
+public:
+	virtual bool CanActivateAbility(
+		const FGameplayAbilitySpecHandle Handle,
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayTagContainer* SourceTags = nullptr,
+		const FGameplayTagContainer* TargetTags = nullptr,
+		FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
+
+	virtual void ActivateAbility(
+		const FGameplayAbilitySpecHandle Handle,
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilityActivationInfo ActivationInfo,
+		const FGameplayEventData* TriggerEventData) override;
+
+	virtual void CancelAbility(
+		const FGameplayAbilitySpecHandle Handle,
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilityActivationInfo ActivationInfo,
+		bool bReplicateCancelAbility) override;
+
+	virtual void EndAbility(
+		const FGameplayAbilitySpecHandle Handle,
+		const FGameplayAbilityActorInfo* ActorInfo,
+		const FGameplayAbilityActivationInfo ActivationInfo,
+		bool bReplicateEndAbility,
+		bool bWasCancelled) override;
+
+protected:
+	void InitializeNiagaraSystem();
+
+	UFUNCTION(blueprintCallable, Category=Ability, meta=(AllowPrivateAccess=true))
+	void SetBeamActive(bool BeamIsActive);
+	
+	UPROPERTY(EditDefaultsOnly, Category=Niagara, meta=(AllowPrivateAccess=true))
+	UNiagaraComponent* NiagaraEffect{};
+	
+	UPROPERTY(EditDefaultsOnly, Category=Niagara, meta=(AllowPrivateAccess=true))
+	UNiagaraSystem* NiagaraSystemAsset{};
 };

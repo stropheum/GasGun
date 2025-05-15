@@ -7,7 +7,7 @@
 #include "FireGunAbility_Projectile.generated.h"
 
 /**
- * 
+ * Base Gameplay Ability for firing projectile-based weapons
  */
 UCLASS()
 class GASGUN_API UFireGunAbility_Projectile : public UFireGunAbility_Base

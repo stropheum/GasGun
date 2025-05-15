@@ -6,6 +6,8 @@
 #include "Abilities/GameplayAbility.h"
 #include "FireGunAbility_Base.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FFireGunTick);
+
 /**
  * Base Gameplay Ability for firing all weapons
  */
@@ -53,4 +55,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay, meta=(AllowPrivateAccess=true))
 	UAnimMontage* FireAnimation{};
+
+	UPROPERTY(BlueprintAssignable, Category=GameplayAbilities, meta=(AllowPrivateAccess=true))
+	FFireGunTick OnFireTick{};
 };

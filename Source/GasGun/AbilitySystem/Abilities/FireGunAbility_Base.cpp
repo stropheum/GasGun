@@ -3,9 +3,6 @@
 
 #include "FireGunAbility_Base.h"
 
-#include "GasGun/Guns/Projectile.h"
-#include "Kismet/GameplayStatics.h"
-
 bool UFireGunAbility_Base::CanActivateAbility(
 	const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo,
@@ -44,4 +41,10 @@ void UFireGunAbility_Base::EndAbility(
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
-void UFireGunAbility_Base::Fire(){}
+void UFireGunAbility_Base::Fire()
+{
+	if (OnFireTick.IsBound())
+	{
+		OnFireTick.Broadcast();
+	}
+}
