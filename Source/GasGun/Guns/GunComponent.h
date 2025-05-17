@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
-#include "Attachments/GunAttachmentComponentBase.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GunComponent.generated.h"
 
@@ -29,7 +28,9 @@ public:
 	
 	TTuple<FVector, FRotator> GetProjectileSpawnPositionRotation() const;
 
-	FVector GetMuzzleOffset() const { return MuzzleOffset; };
+	FVector GetMuzzleOffset() const { return MuzzleOffset; }
+
+	TWeakObjectPtr<APlayerCharacter> GetOwningPlayerWeakPtr() const;
 
 protected:
 	UFUNCTION()
@@ -37,8 +38,6 @@ protected:
 	
 	UFUNCTION()
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
-	void InitializeAttachments();
 
 	UPROPERTY(EditDefaultsOnly, Category=Ability, meta=(AllowPrivateAccess=true))
 	TSubclassOf<class UFireGunAbility_Base> FireWeaponAbilityClass;
@@ -51,9 +50,6 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category=Input, meta=(AllowPrivateAccess=true))
 	class UInputAction* FireAction{};
-
-	UPROPERTY(EditAnywhere, Category=Attachments, meta = (AllowPrivateAccess=true))
-	TArray<TSubclassOf<UGunAttachmentComponentBase>> DefaultAttachmentTypes;
 
 	UPROPERTY()
 	FGameplayAbilitySpecHandle FireAbilityHandle;

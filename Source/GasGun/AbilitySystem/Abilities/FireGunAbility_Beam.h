@@ -6,6 +6,7 @@
 #include "FireGunAbility_Base.h"
 #include "FireGunAbility_Beam.generated.h"
 
+class UGunComponent;
 class UNiagaraComponent;
 class UNiagaraSystem;
 class UNiagaraAsset;
@@ -45,15 +46,28 @@ public:
 		const FGameplayTagContainer* TargetTags = nullptr,
 		FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
 
-protected:
 	void InitializeNiagaraSystem();
+
+protected:
 
 	UFUNCTION(blueprintCallable, Category=Ability, meta=(AllowPrivateAccess=true))
 	void SetBeamActive(bool BeamIsActive);
+	
+	UFUNCTION(BlueprintCallable, Category=Ability, meta=(AllowPrivateAccess=true))
+	void PerformRaycast() const;
+
+	UFUNCTION()
+	void OnBeamTick(float DeltaTime);
 	
 	UPROPERTY(EditDefaultsOnly, Category=Niagara, meta=(AllowPrivateAccess=true))
 	UNiagaraComponent* NiagaraEffect{};
 	
 	UPROPERTY(EditDefaultsOnly, Category=Niagara, meta=(AllowPrivateAccess=true))
 	UNiagaraSystem* NiagaraSystemAsset{};
+
+	UPROPERTY()
+	AActor* OwningActor{};
+
+	UPROPERTY()
+	UGunComponent* OwningGun{};
 };
