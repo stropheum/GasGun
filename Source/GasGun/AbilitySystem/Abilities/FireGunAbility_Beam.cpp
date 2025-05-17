@@ -43,6 +43,9 @@ void UFireGunAbility_Beam::ActivateAbility(
 		TickTask->TickEventReceived.AddDynamic(this, &UFireGunAbility_Beam::OnBeamTick);
 		TickTask->ReadyForActivation();
 	}
+
+	OwnerPlayerCharacter->GetAbilitySystemComponent()->AddGameplayCue(FGameplayTag::RequestGameplayTag("GameplayCue.Gun.Beam.Active"));
+	// OwnerPlayerCharacter->GetAbilitySystemComponent()->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag("GameplayCue.Gun.Beam.Active"), FGameplayCueParameters());
 }
 
 void UFireGunAbility_Beam::CancelAbility(
@@ -62,6 +65,10 @@ void UFireGunAbility_Beam::EndAbility(
 	bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+
+	APlayerCharacter* OwnerPlayerCharacter = Cast<APlayerCharacter>(OwningActor);
+	check(OwnerPlayerCharacter);
+	OwnerPlayerCharacter->GetAbilitySystemComponent()->RemoveGameplayCue(FGameplayTag::RequestGameplayTag("GameplayCue.Gun.Beam.Active"));
 	
 	if (NiagaraEffect)
 	{
