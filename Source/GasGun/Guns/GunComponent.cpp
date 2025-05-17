@@ -102,6 +102,13 @@ bool UGunComponent::AttachWeapon(APlayerCharacter* TargetCharacter)
 	return true;
 }
 
+void UGunComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	InitializeAttachments();
+}
+
 void UGunComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	if (CharacterWeakPtr.IsValid())
@@ -116,4 +123,28 @@ void UGunComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	}
 
 	Super::EndPlay(EndPlayReason);
+}
+
+void UGunComponent::InitializeAttachments()
+{
+	AActor* Owner = GetOwner();
+	if (!Owner) { return; }
+	
+	for (const TSubclassOf<UGunAttachmentComponentBase>& AttachmentClass : DefaultAttachmentTypes)
+	{
+		if (!AttachmentClass)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("AttachmentClass != null"));
+			continue;
+		}
+
+		UGunAttachmentComponentBase* NewAttachment = NewObject<UGunAttachmentComponentBase>(GetOwner(), AttachmentClass);
+		if (!NewAttachment) { continue; }
+		
+		Owner->AddInstanceComponent(NewAttachment);
+		NewAttachment->RegisterComponent();
+		NewAttachment->InitializeComponent();
+		NewAttachment->SetOwningGun(this);
+		NewAttachment->InitializeAttachment();
+	}
 }

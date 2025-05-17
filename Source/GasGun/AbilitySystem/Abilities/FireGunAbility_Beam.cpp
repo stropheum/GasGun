@@ -12,7 +12,6 @@ void UFireGunAbility_Beam::ActivateAbility(
 	const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	InitializeNiagaraSystem();
 }
 
 void UFireGunAbility_Beam::CancelAbility(

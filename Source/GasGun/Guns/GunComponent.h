@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemComponent.h"
+#include "Attachments/GunAttachmentComponentBase.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "GunComponent.generated.h"
 
@@ -28,21 +29,31 @@ public:
 	
 	TTuple<FVector, FRotator> GetProjectileSpawnPositionRotation() const;
 
+	FVector GetMuzzleOffset() const { return MuzzleOffset; };
+
 protected:
+	UFUNCTION()
+	virtual void BeginPlay() override;
+	
 	UFUNCTION()
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Ability", meta=(AllowPrivateAccess=true))
+	void InitializeAttachments();
+
+	UPROPERTY(EditDefaultsOnly, Category=Ability, meta=(AllowPrivateAccess=true))
 	TSubclassOf<class UFireGunAbility_Base> FireWeaponAbilityClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay, meta=(AllowPrivateAccess=true))
 	FVector MuzzleOffset;
 
-	UPROPERTY(EditDefaultsOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, Category=Input, meta=(AllowPrivateAccess=true))
 	class UInputMappingContext* FireMappingContext{};
 
-	UPROPERTY(EditDefaultsOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, Category=Input, meta=(AllowPrivateAccess=true))
 	class UInputAction* FireAction{};
+
+	UPROPERTY(EditAnywhere, Category=Attachments, meta = (AllowPrivateAccess=true))
+	TArray<TSubclassOf<UGunAttachmentComponentBase>> DefaultAttachmentTypes;
 
 	UPROPERTY()
 	FGameplayAbilitySpecHandle FireAbilityHandle;
