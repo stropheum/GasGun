@@ -51,7 +51,7 @@ void UFireGunAbility_Beam::CancelAbility(
 	const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo,
-	bool bReplicateCancelAbility)
+	const bool bReplicateCancelAbility)
 {
 	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
 }
@@ -60,12 +60,12 @@ void UFireGunAbility_Beam::EndAbility(
 	const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo,
 	const FGameplayAbilityActivationInfo ActivationInfo,
-	bool bReplicateEndAbility,
-	bool bWasCancelled)
+	const bool bReplicateEndAbility,
+	const bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 
-	APlayerCharacter* OwnerPlayerCharacter = Cast<APlayerCharacter>(OwningActor);
+	const APlayerCharacter* OwnerPlayerCharacter = Cast<APlayerCharacter>(OwningActor);
 	check(OwnerPlayerCharacter);
 	OwnerPlayerCharacter->GetAbilitySystemComponent()->RemoveGameplayCue(FGameplayTag::RequestGameplayTag("GameplayCue.Gun.Beam.Active"));
 	
@@ -88,7 +88,7 @@ bool UFireGunAbility_Beam::CanActivateAbility(
 	return Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
 }
 
-void UFireGunAbility_Beam::InitializeNiagaraSystem()
+void UFireGunAbility_Beam::InitializeNiagaraSystem() const
 {
 	if (NiagaraEffect && NiagaraSystemAsset)
 	{
@@ -102,9 +102,9 @@ void UFireGunAbility_Beam::InitializeNiagaraSystem()
 	}
 }
 
-void UFireGunAbility_Beam::SetBeamActive(bool BeamIsActive)
+void UFireGunAbility_Beam::SetBeamActive(const bool BeamIsActive) const
 {
-	if (NiagaraEffect == nullptr /*|| NiagaraEffect->IsActive() == BeamIsActive */) { return; }
+	if (NiagaraEffect == nullptr || NiagaraEffect->IsActive() == BeamIsActive) { return; }
 	
 	NiagaraEffect->SetActive(BeamIsActive);
 }

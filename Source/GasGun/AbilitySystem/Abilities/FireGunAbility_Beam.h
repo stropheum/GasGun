@@ -46,12 +46,12 @@ public:
 		const FGameplayTagContainer* TargetTags = nullptr,
 		FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
 
-	void InitializeNiagaraSystem();
+	void InitializeNiagaraSystem() const;
 
 protected:
 
 	UFUNCTION(blueprintCallable, Category=Ability, meta=(AllowPrivateAccess=true))
-	void SetBeamActive(bool BeamIsActive);
+	void SetBeamActive(bool BeamIsActive) const;
 	
 	UFUNCTION(BlueprintCallable, Category=Ability, meta=(AllowPrivateAccess=true))
 	void PerformRaycast() const;
