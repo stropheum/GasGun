@@ -58,4 +58,7 @@ protected:
 
 	UPROPERTY(BlueprintAssignable, Category=GameplayAbilities, meta=(AllowPrivateAccess=true))
 	FFireGunTick OnFireTick{};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=GameplayAbilities, meta=(AllowPrivateAccess=true))
+	float FireTickRate = 0.1f;
 };

@@ -45,7 +45,6 @@ void UFireGunAbility_Beam::ActivateAbility(
 	}
 
 	OwnerPlayerCharacter->GetAbilitySystemComponent()->AddGameplayCue(FGameplayTag::RequestGameplayTag("GameplayCue.Gun.Beam.Active"));
-	// OwnerPlayerCharacter->GetAbilitySystemComponent()->ExecuteGameplayCue(FGameplayTag::RequestGameplayTag("GameplayCue.Gun.Beam.Active"), FGameplayCueParameters());
 }
 
 void UFireGunAbility_Beam::CancelAbility(
@@ -160,7 +159,7 @@ void UFireGunAbility_Beam::PerformRaycast() const
 
             if (ImpactComponent->IsSimulatingPhysics())
             {
-                FVector Impulse = ForwardVector * LaserForce * FMath::Abs(CosTheta);
+                FVector Impulse = ForwardVector * LaserForce * BasePower * FMath::Abs(CosTheta);
                 ImpactComponent->AddImpulseAtLocation(Impulse, Hit.ImpactPoint);
             }
             // else if (ImpactCharacter && ImpactCharacter->IsDead())
