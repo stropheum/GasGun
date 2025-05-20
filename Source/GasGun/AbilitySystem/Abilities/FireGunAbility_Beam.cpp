@@ -7,6 +7,7 @@
 #include "GasGun/Characters/PlayerCharacter.h"
 #include "GasGun/Guns/GunComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "Components/CapsuleComponent.h"
 #include "GasGun/AbilitySystem/Tasks/AbilityTask_OnTickEvent.h"
 
 void UFireGunAbility_Beam::ActivateAbility(
@@ -148,8 +149,8 @@ void UFireGunAbility_Beam::PerformRaycast() const
             constexpr float LaserForce = 12500.0f;
             constexpr float LaserDamage = 1.0f;
 
-            float CosTheta = FVector::DotProduct(ForwardVector, Hit.ImpactNormal);
-            float AngleDegrees = FMath::RadiansToDegrees(FMath::Acos(CosTheta));
+            const float CosTheta = FVector::DotProduct(ForwardVector, Hit.ImpactNormal);
+            const float AngleDegrees = FMath::RadiansToDegrees(FMath::Acos(CosTheta));
             UE_LOG(LogTemp, Log, TEXT("Hit Angle: %f degrees, CosTheta: %f"), AngleDegrees, CosTheta);
 
             if (ImpactCharacter)
@@ -157,16 +158,20 @@ void UFireGunAbility_Beam::PerformRaycast() const
                 // ImpactCharacter->Damage(LaserDamage);
             }
 
+        	const FVector Impulse = ForwardVector * BasePower * FMath::Abs(CosTheta);
             if (ImpactComponent->IsSimulatingPhysics())
             {
-                FVector Impulse = ForwardVector * LaserForce * BasePower * FMath::Abs(CosTheta);
-                ImpactComponent->AddImpulseAtLocation(Impulse, Hit.ImpactPoint);
+            	const float RawMass = ImpactComponent->GetMass() * ImpactComponent->GetMassScale();
+                ImpactComponent->AddImpulseAtLocation(Impulse * RawMass, Hit.ImpactPoint);
             }
             // else if (ImpactCharacter && ImpactCharacter->IsDead())
-            // {
-            //     FVector Impulse = ForwardVector * LaserForce * FMath::Abs(CosTheta);
-            //     ImpactCharacter->GetMesh()->AddImpulseAtLocation(Impulse, Hit.ImpactPoint);
-            // }
+        	else if (ImpactCharacter)
+            {
+	            const UCapsuleComponent* Capsule = ImpactCharacter->GetCapsuleComponent();
+        		const float RawMass = Capsule->GetMass() * Capsule->GetMassScale();
+                ImpactCharacter->GetMesh()->SetSimulatePhysics(true);
+                ImpactCharacter->GetMesh()->AddImpulseAtLocation(Impulse * RawMass, Hit.ImpactPoint);
+            }
         }
     }
     else
