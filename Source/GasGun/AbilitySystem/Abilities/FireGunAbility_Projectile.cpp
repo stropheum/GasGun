@@ -5,7 +5,7 @@
 
 #include "GasGun/Characters/PlayerCharacter.h"
 #include "GasGun/Guns/GunComponent.h"
-#include "GasGun/Guns/Projectile.h"
+#include "GasGun/Guns/Projectiles/Projectile.h"
 #include "Kismet/GameplayStatics.h"
 
 void UFireGunAbility_Projectile::ActivateAbility(

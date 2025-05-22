@@ -9,6 +9,19 @@
 class USphereComponent;
 class UProjectileMovementComponent;
 
+USTRUCT(BlueprintType)
+struct FFlechetteProjectileConfig
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FlechetteProjectileConfig" )
+	TSubclassOf<class AProjectile> ProjectileClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FlechetteProjectileConfig")
+	int Count;
+	
+};
+
 UCLASS(config=Game)
 class AProjectile : public AActor
 {
