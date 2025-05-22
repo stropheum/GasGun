@@ -10,6 +10,7 @@ public class GasGun : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new string[]
 		{
+			"AIModule",
 			"Core", 
 			"CoreUObject", 
 			"Engine", 
@@ -18,7 +19,8 @@ public class GasGun : ModuleRules
 			"GameplayAbilities", 
 			"GameplayTasks", 
 			"GameplayTags",
-			"Niagara"
+			"NavigationSystem",
+			"Niagara", 
 		});
 	}
 }

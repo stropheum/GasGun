@@ -3,10 +3,13 @@
 
 #include "NonPlayerCharacter.h"
 
+#include "GasGun/Components/NpcWanderComponent.h"
+
 
 ANonPlayerCharacter::ANonPlayerCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	CreateDefaultSubobject<UNpcWanderComponent>("NpcWanderComponent");
 }
 
 void ANonPlayerCharacter::BeginPlay()
