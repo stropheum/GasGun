@@ -63,13 +63,15 @@ void UFireGunAbility_Projectile::Fire()
 	checkf(FireSound != nullptr, TEXT("FireSound == nullptr"));
 	
 	const APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(Actor);
-	const UGunComponent* Gun = PlayerCharacter->GetGun();
+	UGunComponent* Gun = PlayerCharacter->GetGun();
 	checkf(Gun != nullptr, TEXT("Attempting to activate FireProjectileGunAbility when Gun == nullptr"));
 	
 	const TTuple<FVector, FRotator> SpawnLocationRotation = Gun->GetProjectileSpawnPositionRotation();
 	FActorSpawnParameters ActorSpawnParams;
 	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
-	World->SpawnActor<AProjectile>(ProjectileClass, SpawnLocationRotation.Key, SpawnLocationRotation.Value, ActorSpawnParams);
+	AProjectile* FiredProjectile = World->SpawnActor<AProjectile>(ProjectileClass, SpawnLocationRotation.Key, SpawnLocationRotation.Value, ActorSpawnParams);
+
+	FiredProjectile->SetOwningGun(Gun);
 	
 	UGameplayStatics::PlaySoundAtLocation(this, FireSound, SpawnLocationRotation.Key);
 	if (UAnimInstance* AnimInstance = PlayerCharacter->GetMesh1P()->GetAnimInstance(); AnimInstance != nullptr)

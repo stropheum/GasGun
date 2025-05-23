@@ -52,13 +52,13 @@ void UNpcWanderComponent::TickComponent(const float DeltaTime, const ELevelTick 
 				PathFollowingComponent->OnRequestFinished.AddUObject(this, &UNpcWanderComponent::OnMoveCompleted);
 				APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 				check(PlayerController);
-				GEngine->AddOnScreenDebugMessage(-1, -1, FColor::Cyan, PathFollowingComponent->GetStatusDesc());
+				// GEngine->AddOnScreenDebugMessage(-1, -1, FColor::Cyan, PathFollowingComponent->GetStatusDesc());
 				DrawDebugSphere(GetWorld(), PathFollowingComponent->GetCurrentTargetLocation(), 5.0f, 36, FColor::Cyan, true, 0.0f, 0, 1.0f);
 
 				auto OwnerLocation = GetOwner()->GetActorLocation();
 				auto TargetLocation = PathFollowingComponent->GetCurrentTargetLocation();
 				auto DebugString = FString::Printf(TEXT("%s - %s"), *OwnerLocation.ToString(), *TargetLocation.ToString());
-				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, DebugString);
+				// GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, DebugString);
 				DrawDebugLine(GetWorld(), OwnerLocation, TargetLocation, FColor::Red);
 				AIController->MoveToActor(PlayerController);
 			}

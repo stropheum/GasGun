@@ -35,3 +35,13 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		Destroy();
 	}
 }
+
+UGunComponent* AProjectile::GetOwningGun() const
+{
+	return OwningGun;
+}
+
+void AProjectile::SetOwningGun(UGunComponent* Gun)
+{
+	OwningGun = Gun;
+}

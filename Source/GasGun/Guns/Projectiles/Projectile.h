@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Projectile.generated.h"
 
+class UGunComponent;
 class USphereComponent;
 class UProjectileMovementComponent;
 
@@ -34,6 +35,12 @@ public:
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
+	UFUNCTION()
+	UGunComponent* GetOwningGun() const;
+
+	UFUNCTION()
+	void SetOwningGun(UGunComponent* Gun);
+
 	USphereComponent* GetCollisionComp() const { return CollisionComp; }
 	
 	UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }
@@ -45,6 +52,8 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	UProjectileMovementComponent* ProjectileMovement{};
-	
+
+	UPROPERTY()
+	UGunComponent* OwningGun{};
 };
 

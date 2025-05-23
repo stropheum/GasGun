@@ -25,16 +25,13 @@ void UAbilityTask_WaitStartFalling::TickTask(const float DeltaTime)
 	Super::TickTask(DeltaTime);
 
 	const FVector CurrentVelocity = TrackedProjectile->GetVelocity();
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, FString::Printf(TEXT("Velocity: %s"), *CurrentVelocity.ToString()));
 	if (CurrentVelocity.Z > 0.f)
 	{
 		return;
 	}
 
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Yellow, FString(TEXT("FALLING DETECTED")));
 	if (StartFallingEventReceived.IsBound())
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Green, FString(TEXT("FALLING BROADCAST")));
 		StartFallingEventReceived.Broadcast(TrackedProjectile);
 	}
 }
