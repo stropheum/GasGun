@@ -12,7 +12,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FWaitGetDamagedDelegate, float, Da
  * 
  */
 UCLASS()
-class GAS_EXAMPLE_API UAbilityTask_WaitGetDamaged : public UAbilityTask
+class GASGUN_API UAbilityTask_WaitGetDamaged : public UAbilityTask
 {
 	GENERATED_BODY()
 
