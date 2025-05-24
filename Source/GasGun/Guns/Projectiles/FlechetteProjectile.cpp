@@ -24,7 +24,6 @@ void AFlechetteProjectile::Tick(const float DeltaTime)
 	Super::Tick(DeltaTime);
 	
 	AddActorLocalRotation(FRotator(0.f, RotationSpeed * DeltaTime, 0.f));
-	GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::White, FString::Printf(TEXT("Velocity: %s"), *GetActorRotation().ToString()));
 	CheckIsFalling();
 }
 
@@ -44,19 +43,36 @@ void AFlechetteProjectile::CheckIsFalling()
 
 void AFlechetteProjectile::Fire()
 {
-	if (RoundsFired < AmmoCapacity)
+	if (RoundsFired >= AmmoCapacity)
 	{
-		RoundsFired++;
+		return;
+	}
+	
+	FActorSpawnParameters ActorSpawnParams;
+	ActorSpawnParams.Owner = this;
+	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	
+	const auto World = GetWorld();
+	const FVector SpawnLocation = GetActorLocation();
+	const FRotator BaseRotation = GetActorRotation();
+	const int32 RoundsToFire = FMath::Min(RoundsPerTick, AmmoCapacity - RoundsFired);
+	const float HalfSpreadAngle = AngleSpread * 0.5f;
+	const float AngleIncrement = (RoundsToFire > 1) ? AngleSpread / static_cast<float>(RoundsToFire - 1) : 0.0f;
+	
+	for (int32 i = 0; i < RoundsToFire; ++i)
+	{
+		const float AngleOffset = -HalfSpreadAngle + (AngleIncrement * i);
 		
-		FActorSpawnParameters ActorSpawnParams;
-		ActorSpawnParams.Owner = this;
-		ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
-		const auto World = GetWorld();
-		AProjectile* SubProjectile = World->SpawnActor<AProjectile>(SubProjectileClass, GetActorLocation(), GetActorRotation(), ActorSpawnParams);
-
-		SubProjectile->GetProjectileMovement()->Velocity = GetActorForwardVector() * SubProjectileVelocity;
+		FRotator ProjectileRotation = BaseRotation;
+		ProjectileRotation.Yaw += AngleOffset;
+		
+		AProjectile* SubProjectile = World->SpawnActor<AProjectile>(SubProjectileClass, SpawnLocation, ProjectileRotation, ActorSpawnParams);
+		
+		const FVector Direction = ProjectileRotation.Vector();
+		SubProjectile->GetProjectileMovement()->Velocity = Direction * SubProjectileVelocity;
+		
 		SubProjectiles.Add(SubProjectile);
+		RoundsFired++;
 	}
 }
 
