@@ -16,7 +16,7 @@ void AFlechetteProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
-	check(SubProjectileFireSound);
+	check(ProjectileAttributes.SubProjectileFireSound);
 
 	ProjectileMovement->bRotationFollowsVelocity = false;
 	ProjectileMovement->bRotationRemainsVertical = true;
@@ -28,26 +28,26 @@ void AFlechetteProjectile::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	AddActorLocalRotation(FRotator(0.f, RotationSpeed * DeltaTime, 0.f));
+	AddActorLocalRotation(FRotator(0.f, ProjectileAttributes.RotationSpeed * DeltaTime, 0.f));
 	CheckIsFalling();
 }
 
 void AFlechetteProjectile::CheckIsFalling()
 {
-	if (bIsFallingTriggered) { return; }
+	if (ProjectileAttributes.bIsFallingTriggered) { return; }
 	
-	if (GetVelocity().Z > MinVerticalVelocityTrigger)
+	if (GetVelocity().Z > ProjectileAttributes.MinVerticalVelocityTrigger)
 	{
 		return;
 	}
 
-	bIsFallingTriggered = true;
-	GetWorld()->GetTimerManager().SetTimer(FireRateTimer, this, &AFlechetteProjectile::Fire, FireRate, true, 0.0f);
+	ProjectileAttributes.bIsFallingTriggered = true;
+	GetWorld()->GetTimerManager().SetTimer(FireRateTimer, this, &AFlechetteProjectile::Fire, ProjectileAttributes.FireRate, true, 0.0f);
 }
 
 void AFlechetteProjectile::Fire()
 {
-	if (RoundsFired >= AmmoCapacity)
+	if (RoundsFired >= ProjectileAttributes.AmmoCapacity)
 	{
 		return;
 	}
@@ -59,9 +59,9 @@ void AFlechetteProjectile::Fire()
 	const auto World = GetWorld();
 	const FVector SpawnLocation = GetActorLocation();
 	const FRotator BaseRotation = GetActorRotation();
-	const int32 RoundsToFire = FMath::Min(RoundsPerTick, AmmoCapacity - RoundsFired);
-	const float HalfSpreadAngle = AngleSpread * 0.5f;
-	const float AngleIncrement = (RoundsToFire > 1) ? AngleSpread / static_cast<float>(RoundsToFire - 1) : 0.0f;
+	const int32 RoundsToFire = FMath::Min(ProjectileAttributes.RoundsPerTick, ProjectileAttributes.AmmoCapacity - RoundsFired);
+	const float HalfSpreadAngle = ProjectileAttributes.AngleSpread * 0.5f;
+	const float AngleIncrement = (RoundsToFire > 1) ? ProjectileAttributes.AngleSpread / static_cast<float>(RoundsToFire - 1) : 0.0f;
 	
 	for (int32 i = 0; i < RoundsToFire; ++i)
 	{
@@ -70,7 +70,7 @@ void AFlechetteProjectile::Fire()
 		FRotator ProjectileRotation = BaseRotation;
 		ProjectileRotation.Yaw += AngleOffset;
 		
-		AProjectile* SubProjectile = World->SpawnActor<AProjectile>(SubProjectileClass, SpawnLocation, ProjectileRotation, ActorSpawnParams);
+		AProjectile* SubProjectile = World->SpawnActor<AProjectile>(ProjectileAttributes.SubProjectileClass, SpawnLocation, ProjectileRotation, ActorSpawnParams);
 
 		UPrimitiveComponent* FlechetteCollision = Cast<UPrimitiveComponent>(GetRootComponent());
 		UPrimitiveComponent* SubProjectileCollision = Cast<UPrimitiveComponent>(SubProjectile->GetRootComponent());
@@ -82,13 +82,13 @@ void AFlechetteProjectile::Fire()
 		}
 		
 		const FVector Direction = ProjectileRotation.Vector();
-		SubProjectile->GetProjectileMovement()->Velocity = Direction * SubProjectileVelocity;
+		SubProjectile->GetProjectileMovement()->Velocity = Direction * ProjectileAttributes.SubProjectileVelocity;
 		
 		SubProjectiles.Add(SubProjectile);
 		
 		RoundsFired++;
 	}
 	
-	UGameplayStatics::PlaySoundAtLocation(this, SubProjectileFireSound, GetActorLocation());
+	UGameplayStatics::PlaySoundAtLocation(this, ProjectileAttributes.SubProjectileFireSound, GetActorLocation());
 }
 

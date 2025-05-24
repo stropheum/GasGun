@@ -8,26 +8,10 @@
 
 class UGunComponent;
 
-UCLASS()
-class GASGUN_API AFlechetteProjectile : public AProjectile
+USTRUCT(BlueprintType)
+struct FFlechetteProjectileAttributes
 {
 	GENERATED_BODY()
-
-public:
-	AFlechetteProjectile();
-
-protected:
-	virtual void BeginPlay() override;
-
-public:
-	virtual void Tick(float DeltaTime) override;
-
-protected:
-	UFUNCTION()
-	void CheckIsFalling();
-
-	UFUNCTION()
-	void Fire();
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FlechetteProjectile", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AProjectile> SubProjectileClass{};
@@ -58,6 +42,31 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "FlechetteProjectile", meta = (AllowPrivateAccess = "true"))
 	USoundBase* SubProjectileFireSound{};
+};
+
+UCLASS()
+class GASGUN_API AFlechetteProjectile : public AProjectile
+{
+	GENERATED_BODY()
+
+public:
+	AFlechetteProjectile();
+
+protected:
+	virtual void BeginPlay() override;
+
+public:
+	virtual void Tick(float DeltaTime) override;
+
+protected:
+	UFUNCTION()
+	void CheckIsFalling();
+
+	UFUNCTION()
+	void Fire();
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "FlechetteProjectile", meta = (AllowPrivateAccess = "true"))
+	FFlechetteProjectileAttributes ProjectileAttributes;
 
 	UPROPERTY()
 	TArray<AProjectile*> SubProjectiles{};
