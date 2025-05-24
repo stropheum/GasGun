@@ -45,6 +45,9 @@ protected:
 	float AngleSpread = 360.0f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FlechetteProjectile", meta = (AllowPrivateAccess = "true"))
+	float MinVerticalVelocityTrigger = 0.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FlechetteProjectile", meta = (AllowPrivateAccess = "true"))
 	int RoundsPerTick = 4;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FlechetteProjectile", meta = (AllowPrivateAccess = "true"))
@@ -53,9 +56,13 @@ protected:
 	UPROPERTY(BlueprintReadOnly, Category = "FlechetteProjectile", meta = (AllowPrivateAccess = "true"))
 	bool bIsFallingTriggered = false;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "FlechetteProjectile", meta = (AllowPrivateAccess = "true"))
+	USoundBase* SubProjectileFireSound{};
+
 	UPROPERTY()
 	TArray<AProjectile*> SubProjectiles{};
 
 	FTimerHandle FireRateTimer;
 	int RoundsFired = 0;
+	FVector LastTickVelocity{};
 };

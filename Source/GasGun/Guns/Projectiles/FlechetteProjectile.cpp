@@ -4,6 +4,7 @@
 #include "FlechetteProjectile.h"
 
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 
 AFlechetteProjectile::AFlechetteProjectile()
@@ -15,8 +16,12 @@ void AFlechetteProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetProjectileMovement()->bRotationFollowsVelocity = false;
-	GetProjectileMovement()->bRotationRemainsVertical = true;
+	check(SubProjectileFireSound);
+
+	ProjectileMovement->bRotationFollowsVelocity = false;
+	ProjectileMovement->bRotationRemainsVertical = true;
+	LastTickVelocity = ProjectileMovement->Velocity;
+	SetActorRotation(FRotator::ZeroRotator);
 }
 
 void AFlechetteProjectile::Tick(const float DeltaTime)
@@ -30,9 +35,8 @@ void AFlechetteProjectile::Tick(const float DeltaTime)
 void AFlechetteProjectile::CheckIsFalling()
 {
 	if (bIsFallingTriggered) { return; }
-
-	const FVector CurrentVelocity = GetVelocity();
-	if (CurrentVelocity.Z > 0.f)
+	
+	if (GetVelocity().Z > MinVerticalVelocityTrigger)
 	{
 		return;
 	}
@@ -67,12 +71,24 @@ void AFlechetteProjectile::Fire()
 		ProjectileRotation.Yaw += AngleOffset;
 		
 		AProjectile* SubProjectile = World->SpawnActor<AProjectile>(SubProjectileClass, SpawnLocation, ProjectileRotation, ActorSpawnParams);
+
+		UPrimitiveComponent* FlechetteCollision = Cast<UPrimitiveComponent>(GetRootComponent());
+		UPrimitiveComponent* SubProjectileCollision = Cast<UPrimitiveComponent>(SubProjectile->GetRootComponent());
+
+		if (FlechetteCollision && SubProjectileCollision)
+		{
+			FlechetteCollision->IgnoreActorWhenMoving(SubProjectile, true);
+			SubProjectileCollision->IgnoreActorWhenMoving(this, true);
+		}
 		
 		const FVector Direction = ProjectileRotation.Vector();
 		SubProjectile->GetProjectileMovement()->Velocity = Direction * SubProjectileVelocity;
 		
 		SubProjectiles.Add(SubProjectile);
+		
 		RoundsFired++;
 	}
+	
+	UGameplayStatics::PlaySoundAtLocation(this, SubProjectileFireSound, GetActorLocation());
 }
 

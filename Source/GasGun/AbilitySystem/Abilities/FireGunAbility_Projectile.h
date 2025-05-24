@@ -44,8 +44,11 @@ public:
 	virtual void Fire() override;
 
 protected:
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, Category = "Ability", meta=(AllowPrivateAccess=true))
-	float FireRate;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=GameplayAbilities, meta=(AllowPrivateAccess=true))
+	bool bIsAuto{};
+
+	UPROPERTY(BlueprintReadOnly, Category=GameplayAbilities, meta=(AllowPrivateAccess=true))
+	bool bHasFired{};
 	
 	FTimerHandle FireRateTimer;
 };

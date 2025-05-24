@@ -15,7 +15,7 @@ void UFireGunAbility_Projectile::ActivateAbility(
 	const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-	GetWorld()->GetTimerManager().SetTimer(FireRateTimer, this, &UFireGunAbility_Projectile::Fire, FireRate, true, 0.0f);
+	GetWorld()->GetTimerManager().SetTimer(FireRateTimer, this, &UFireGunAbility_Projectile::Fire, FireTickRate, bIsAuto, 0.0f);
 }
 
 void UFireGunAbility_Projectile::CancelAbility(
