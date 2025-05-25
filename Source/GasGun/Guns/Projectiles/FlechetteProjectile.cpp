@@ -24,6 +24,10 @@ void AFlechetteProjectile::BeginPlay()
 	SetActorRotation(FRotator::ZeroRotator);
 }
 
+void AFlechetteProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+}
+
 void AFlechetteProjectile::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
