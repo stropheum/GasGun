@@ -10,3 +10,10 @@ AGasGunGameMode::AGasGunGameMode()
 	DefaultPawnClass = PlayerPawnClassFinder.Class;
 
 }
+
+void AGasGunGameMode::PostLogin(APlayerController* NewPlayer)
+{
+	Super::PostLogin(NewPlayer);
+
+	PlayerControllerList.Add(NewPlayer);
+}

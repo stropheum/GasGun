@@ -13,6 +13,12 @@ class AGasGunGameMode : public AGameModeBase
 
 public:
 	AGasGunGameMode();
+
+protected:
+	virtual void PostLogin(APlayerController* NewPlayer) override;
+
+	UPROPERTY()
+	TArray<TObjectPtr<APlayerController>> PlayerControllerList{};
 };
 
 

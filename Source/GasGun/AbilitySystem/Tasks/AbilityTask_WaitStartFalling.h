@@ -32,5 +32,5 @@ protected:
 	virtual void OnDestroy(bool AbilityEnded) override;
 
 	UPROPERTY()
-	AFlechetteProjectile* TrackedProjectile{};
+	TObjectPtr<AFlechetteProjectile> TrackedProjectile{};
 };

@@ -60,17 +60,17 @@ protected:
 	void OnBeamTick(float DeltaTime);
 	
 	UPROPERTY(EditDefaultsOnly, Category=Niagara, meta=(AllowPrivateAccess=true))
-	UNiagaraComponent* NiagaraEffect{};
+	TObjectPtr<UNiagaraComponent> NiagaraEffect{};
 	
 	UPROPERTY(EditDefaultsOnly, Category=Niagara, meta=(AllowPrivateAccess=true))
-	UNiagaraSystem* NiagaraSystemAsset{};
+	TObjectPtr<UNiagaraSystem> NiagaraSystemAsset{};
 
 	UPROPERTY(EditDefaultsOnly, Category=Abilities, meta=(AllowPrivateAccess=true))
 	float BasePower;
 
 	UPROPERTY()
-	AActor* OwningActor{};
+	TObjectPtr<AActor> OwningActor{};
 
 	UPROPERTY()
-	UGunComponent* OwningGun{};
+	TObjectPtr<UGunComponent> OwningGun{};
 };

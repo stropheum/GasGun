@@ -46,16 +46,16 @@ protected:
 	FVector MuzzleOffset;
 
 	UPROPERTY(EditDefaultsOnly, Category=Input, meta=(AllowPrivateAccess=true))
-	class UInputMappingContext* FireMappingContext{};
+	TObjectPtr<class UInputMappingContext> FireMappingContext{};
 
 	UPROPERTY(EditDefaultsOnly, Category=Input, meta=(AllowPrivateAccess=true))
-	class UInputAction* FireAction{};
+	TObjectPtr<class UInputAction> FireAction{};
 
 	UPROPERTY()
 	FGameplayAbilitySpecHandle FireAbilityHandle;
 
 	UPROPERTY()
-	UFireGunAbility_Base* FireGunAbility{};
+	TObjectPtr<UFireGunAbility_Base> FireGunAbility{};
 
 private:
 	TWeakObjectPtr<APlayerCharacter> CharacterWeakPtr{};

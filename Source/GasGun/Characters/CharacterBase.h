@@ -41,11 +41,11 @@ public:
 
 protected:
 	UPROPERTY()
-	UAbilitySystemComponent* AbilitySystemComponent{};
+	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent{};
 
 	UPROPERTY()
-	UCharacterBaseAttributeSet* AttributeSet{};
+	TObjectPtr<UCharacterBaseAttributeSet> AttributeSet{};
 
 	UPROPERTY()
-	UGameplayTasksComponent* GameplayTasksComponent{};
+	TObjectPtr<UGameplayTasksComponent> GameplayTasksComponent{};
 };

@@ -48,23 +48,23 @@ protected:
 	// End of APawn interface
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Mesh, meta = (AllowPrivateAccess = "true"))
-	USkeletalMeshComponent* Mesh1P{};
+	TObjectPtr<USkeletalMeshComponent> Mesh1P{};
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	UCameraComponent* FirstPersonCameraComponent{};
+	TObjectPtr<UCameraComponent> FirstPersonCameraComponent{};
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputMappingContext* DefaultMappingContext{};
+	TObjectPtr<UInputMappingContext> DefaultMappingContext{};
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-	UInputAction* JumpAction{};
+	TObjectPtr<UInputAction> JumpAction{};
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-	UInputAction* MoveAction{};
+	TObjectPtr<UInputAction> MoveAction{};
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* LookAction{};
+	TObjectPtr<UInputAction> LookAction{};
 
 	UPROPERTY()
-	UGunComponent* EquippedGun{};
+	TObjectPtr<UGunComponent> EquippedGun{};
 };

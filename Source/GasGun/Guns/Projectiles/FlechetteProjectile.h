@@ -41,7 +41,7 @@ struct FFlechetteProjectileAttributes
 	bool bIsFallingTriggered = false;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "FlechetteProjectile", meta = (AllowPrivateAccess = "true"))
-	USoundBase* SubProjectileFireSound{};
+	TObjectPtr<USoundBase> SubProjectileFireSound{};
 };
 
 UCLASS()
@@ -71,7 +71,7 @@ protected:
 	FFlechetteProjectileAttributes ProjectileAttributes;
 
 	UPROPERTY()
-	TArray<AProjectile*> SubProjectiles{};
+	TArray<TObjectPtr<AProjectile>> SubProjectiles{};
 
 	FTimerHandle FireRateTimer;
 	int RoundsFired = 0;

@@ -27,7 +27,7 @@ protected:
 	void OnMoveCompleted(FAIRequestID FaiRequestID, const FPathFollowingResult& PathFollowingResult);
 	
 	UPROPERTY()
-	AAIController* AIController{};
+	TObjectPtr<AAIController> AIController{};
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category="NPC", meta = (AllowPrivateAccess = "true"))
 	float LocationSelectionInterval = 5.0f;

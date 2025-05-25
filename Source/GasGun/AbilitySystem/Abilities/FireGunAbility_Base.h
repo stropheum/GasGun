@@ -51,10 +51,10 @@ protected:
 	TSubclassOf<class AProjectile> ProjectileClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay, meta=(AllowPrivateAccess=true))
-	USoundBase* FireSound{};
+	TObjectPtr<USoundBase> FireSound{};
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay, meta=(AllowPrivateAccess=true))
-	UAnimMontage* FireAnimation{};
+	TObjectPtr<UAnimMontage> FireAnimation{};
 
 	UPROPERTY(BlueprintAssignable, Category=GameplayAbilities, meta=(AllowPrivateAccess=true))
 	FFireGunTick OnFireTick{};

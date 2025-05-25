@@ -43,7 +43,7 @@ void ACharacterBase::BeginPlay()
 	check(AbilitySystemComponent);
 	check(AttributeSet);
 	
-	AbilitySystemComponent->AddAttributeSetSubobject(AttributeSet);
+	AbilitySystemComponent->AddAttributeSetSubobject(AttributeSet.Get());
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute())
 	                      .AddUObject(this, &ACharacterBase::OnHealthChangeCallback);
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetMaxHealthAttribute())
