@@ -3,7 +3,6 @@
 
 #include "AbilityTask_WaitStartFalling.h"
 
-#include "GameFramework/ProjectileMovementComponent.h"
 #include "GasGun/Guns/Projectiles/FlechetteProjectile.h"
 #include "Net/UnrealNetwork.h"
 

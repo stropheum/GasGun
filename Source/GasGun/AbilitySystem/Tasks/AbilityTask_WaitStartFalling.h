@@ -10,7 +10,7 @@ class AFlechetteProjectile;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWaitStartFallingDelegate, AFlechetteProjectile*, FlechetteProjectile);
 
 /**
- * 
+ * Task that waits until the Actor is falling
  */
 UCLASS()
 class GASGUN_API UAbilityTask_WaitStartFalling : public UAbilityTask

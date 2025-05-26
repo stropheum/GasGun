@@ -7,7 +7,6 @@
 #include "GasGun/Guns/GunComponent.h"
 #include "GasGun/Guns/Projectiles/Projectile.h"
 #include "Kismet/GameplayStatics.h"
-#include "Net/UnrealNetwork.h"
 
 void UFireGunAbility_Projectile::ActivateAbility(
 	const FGameplayAbilitySpecHandle Handle,

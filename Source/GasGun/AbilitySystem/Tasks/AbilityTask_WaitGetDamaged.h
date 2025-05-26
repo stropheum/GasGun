@@ -9,7 +9,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FWaitGetDamagedDelegate, float, DamageDone, float, DamageDoneRatio, const FHitResult&, HitResult, const FGameplayEffectSpec&, Spec, const FGameplayTagContainer&, SourceTags);
 
 /**
- * 
+ * Task that waits until the character is damaged by a projectile or other source
  */
 UCLASS()
 class GASGUN_API UAbilityTask_WaitGetDamaged : public UAbilityTask

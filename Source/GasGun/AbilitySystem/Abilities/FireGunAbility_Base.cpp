@@ -3,8 +3,6 @@
 
 #include "FireGunAbility_Base.h"
 
-#include "Net/UnrealNetwork.h"
-
 void UFireGunAbility_Base::ActivateAbility(
 	const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo,
