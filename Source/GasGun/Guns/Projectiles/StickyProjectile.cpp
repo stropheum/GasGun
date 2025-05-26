@@ -4,16 +4,14 @@
 #include "StickyProjectile.h"
 
 #include "Components/SphereComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 
 
-// Sets default values
 AStickyProjectile::AStickyProjectile()
 {
-	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-// Called when the game starts or when spawned
 void AStickyProjectile::BeginPlay()
 {
 	Super::BeginPlay();
@@ -22,12 +20,35 @@ void AStickyProjectile::BeginPlay()
 
 void AStickyProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	Super::OnHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
-	// TODO: Sticky bomb logic here
+	// Super::OnHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
+	
+	if (OtherActor && OtherActor != this && OtherComp)
+	{
+		AttachToActor(OtherActor, FAttachmentTransformRules::KeepWorldTransform);
+		
+		if (ProjectileMovement)
+		{
+			ProjectileMovement->StopMovementImmediately();
+			SetLifeSpan(0.f);
+		}
+		
+		CollisionComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+	else if (OtherComp)
+	{
+		AttachToComponent(OtherComp, FAttachmentTransformRules::KeepWorldTransform);
+		
+		if (ProjectileMovement)
+		{
+			ProjectileMovement->StopMovementImmediately();
+			SetLifeSpan(0.f);
+		}
+		
+		CollisionComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
 }
 
-// Called every frame
-void AStickyProjectile::Tick(float DeltaTime)
+void AStickyProjectile::Tick(const float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
