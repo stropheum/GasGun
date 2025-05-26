@@ -86,9 +86,9 @@ void AFlechetteProjectile::Fire()
 			SubProjectileCollision->IgnoreActorWhenMoving(this, true);
 		}
 		
-		const FVector Direction = ProjectileRotation.Vector();
-		SubProjectile->GetProjectileMovement()->MaxSpeed = 0.f;
-		SubProjectile->GetProjectileMovement()->Velocity = FVector::ZeroVector;
+		// const FVector Direction = ProjectileRotation.Vector();
+		// SubProjectile->GetProjectileMovement()->MaxSpeed = 0.f;
+		// SubProjectile->GetProjectileMovement()->Velocity = FVector::ZeroVector;
 		
 		SubProjectiles.Add(SubProjectile);
 		
