@@ -3,6 +3,8 @@
 
 #include "FireGunAbility_Projectile.h"
 
+#include "Components/CapsuleComponent.h"
+#include "Components/SphereComponent.h"
 #include "GasGun/Characters/PlayerCharacter.h"
 #include "GasGun/Guns/GunComponent.h"
 #include "GasGun/Guns/Projectiles/Projectile.h"
@@ -62,7 +64,7 @@ void UFireGunAbility_Projectile::Fire()
 	checkf(FireAnimation != nullptr, TEXT("FireAnimation == nullptr"));
 	checkf(FireSound != nullptr, TEXT("FireSound == nullptr"));
 	
-	const APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(Actor);
+	APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(Actor);
 	UGunComponent* Gun = PlayerCharacter->GetGun();
 	checkf(Gun != nullptr, TEXT("Attempting to activate FireProjectileGunAbility when Gun == nullptr"));
 	
@@ -73,7 +75,14 @@ void UFireGunAbility_Projectile::Fire()
 
 	if (FiredProjectile)
 	{
-		FiredProjectile->SetOwningGun(Gun);	
+		FiredProjectile->SetOwningGun(Gun);
+		auto ProjectileCollisionComp = FiredProjectile->GetCollisionComp();
+		auto PlayerCapsule = PlayerCharacter->GetCapsuleComponent();
+		if (ProjectileCollisionComp && PlayerCapsule)
+		{
+			ProjectileCollisionComp->IgnoreActorWhenMoving(PlayerCharacter, true);
+			PlayerCapsule->IgnoreActorWhenMoving(FiredProjectile, true);
+		}
 	}
 	
 	UGameplayStatics::PlaySoundAtLocation(this, FireSound, SpawnLocationRotation.Key);

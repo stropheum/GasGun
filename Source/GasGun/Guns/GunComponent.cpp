@@ -21,7 +21,7 @@ UGunComponent::UGunComponent()
 	MuzzleOffset = FVector(56.5f, 14.25f, 11.3f);
 }
 
-void UGunComponent::ActivateFireAbility()
+void UGunComponent::ActivatePrimaryFireAbility()
 {
 	if (!CharacterWeakPtr.IsValid() || !CharacterWeakPtr->GetController())
 	{
@@ -29,51 +29,108 @@ void UGunComponent::ActivateFireAbility()
 	}
 	
 	UAbilitySystemComponent* Asc = CharacterWeakPtr->GetAbilitySystemComponent();
-	if (!Asc || !FireAbilityHandle.IsValid() || !FireGunAbility)
+	if (!Asc || !PrimaryFireAbilityHandle.IsValid() || !PrimaryFireGunAbility)
 	{
 		return;
 	}
 
-	FGameplayAbilitySpec* AbilitySpec = Asc->FindAbilitySpecFromHandle(FireAbilityHandle);
+	FGameplayAbilitySpec* AbilitySpec = Asc->FindAbilitySpecFromHandle(PrimaryFireAbilityHandle);
 	if (!AbilitySpec)
 	{
 		return;
 	}
 
-	Asc->TryActivateAbility(FireAbilityHandle);
+	Asc->TryActivateAbility(PrimaryFireAbilityHandle);
 }
 
-void UGunComponent::DeactivateFireAbility()
+void UGunComponent::DeactivatePrimaryFireAbility()
 {
-	if (!FireAbilityHandle.IsValid() || !FireGunAbility)
+	if (!PrimaryFireAbilityHandle.IsValid() || !PrimaryFireGunAbility)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("No FireRifleAbility set"));
 		return;
 	}
 
 	UAbilitySystemComponent* Asc = CharacterWeakPtr->GetAbilitySystemComponent();
-	Asc->CancelAbilityHandle(FireAbilityHandle);
+	Asc->CancelAbilityHandle(PrimaryFireAbilityHandle);
 }
 
-void UGunComponent::SetFireAbility(TSubclassOf<UFireGunAbility_Base> FireWeaponAbilityClass)
+void UGunComponent::ActivateSecondaryFireAbility()
+{
+	if (!CharacterWeakPtr.IsValid() || !CharacterWeakPtr->GetController())
+	{
+		return;
+	}
+	
+	UAbilitySystemComponent* Asc = CharacterWeakPtr->GetAbilitySystemComponent();
+	if (!Asc || !SecondaryFireAbilityHandle.IsValid() || !SecondaryFireGunAbility)
+	{
+		return;
+	}
+
+	FGameplayAbilitySpec* AbilitySpec = Asc->FindAbilitySpecFromHandle(SecondaryFireAbilityHandle);
+	if (!AbilitySpec)
+	{
+		return;
+	}
+
+	Asc->TryActivateAbility(SecondaryFireAbilityHandle);
+}
+
+void UGunComponent::DeactivateSecondaryFireAbility()
+{
+	if (!SecondaryFireAbilityHandle.IsValid() || !SecondaryFireGunAbility)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No FireAbility set"));
+		return;
+	}
+
+	UAbilitySystemComponent* Asc = CharacterWeakPtr->GetAbilitySystemComponent();
+	Asc->CancelAbilityHandle(SecondaryFireAbilityHandle);
+}
+
+void UGunComponent::SetPrimaryFireAbility(TSubclassOf<UFireGunAbility_Base> FireWeaponAbilityClass)
 {
 	if (CharacterWeakPtr->HasAuthority() && FireWeaponAbilityClass && CharacterWeakPtr->GetAbilitySystemComponent())
 	{
 		if (CharacterWeakPtr->HasAuthority())
 		{
-			UAbilitySystemComponent* ASC = CharacterWeakPtr->GetAbilitySystemComponent();
+			UAbilitySystemComponent* Asc = CharacterWeakPtr->GetAbilitySystemComponent();
 			const FGameplayAbilitySpec AbilitySpec(FireWeaponAbilityClass, 1, -1, this);
 
-			if (FireAbilityHandle.IsValid())
+			if (PrimaryFireAbilityHandle.IsValid())
 			{
-				ASC->CancelAbilityHandle(FireAbilityHandle);
+				Asc->CancelAbilityHandle(PrimaryFireAbilityHandle);
 			}
 			
-			FireAbilityHandle = ASC->GiveAbility(AbilitySpec);
+			PrimaryFireAbilityHandle = Asc->GiveAbility(AbilitySpec);
 
 			CharacterWeakPtr->ForceNetUpdate();
             
-			FireGunAbility = Cast<UFireGunAbility_Base>(AbilitySpec.Ability);
+			PrimaryFireGunAbility = Cast<UFireGunAbility_Base>(AbilitySpec.Ability);
+		}
+	}
+}
+
+void UGunComponent::SetSecondaryFireAbility(TSubclassOf<UFireGunAbility_Base> FireWeaponAbilityClass)
+{
+	if (CharacterWeakPtr->HasAuthority() && FireWeaponAbilityClass && CharacterWeakPtr->GetAbilitySystemComponent())
+	{
+		if (CharacterWeakPtr->HasAuthority())
+		{
+			UAbilitySystemComponent* Asc = CharacterWeakPtr->GetAbilitySystemComponent();
+			const FGameplayAbilitySpec AbilitySpec(FireWeaponAbilityClass, 1, -1, this);
+
+			if (SecondaryFireAbilityHandle.IsValid())
+			{
+				Asc->CancelAbilityHandle(SecondaryFireAbilityHandle);
+			}
+			
+			SecondaryFireAbilityHandle = Asc->GiveAbility(AbilitySpec);
+
+			CharacterWeakPtr->ForceNetUpdate();
+            
+			SecondaryFireGunAbility = Cast<UFireGunAbility_Base>(AbilitySpec.Ability);
 		}
 	}
 }
@@ -98,7 +155,7 @@ bool UGunComponent::AttachWeapon(APlayerCharacter* TargetCharacter)
 	const FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
 	AttachToComponent(CharacterWeakPtr->GetMesh1P(), AttachmentRules, FName(TEXT("GripPoint")));
 
-	SetFireAbility(DefaultFireWeaponAbilityClass);
+	SetPrimaryFireAbility(DefaultPrimaryFireAbilityClass);
 
 	if (const APlayerController* PlayerController = Cast<APlayerController>(CharacterWeakPtr->GetController()))
 	{
@@ -114,8 +171,10 @@ bool UGunComponent::AttachWeapon(APlayerCharacter* TargetCharacter)
 
 		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerController->InputComponent))
 		{
-			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &UGunComponent::ActivateFireAbility);
-			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Completed, this, &UGunComponent::DeactivateFireAbility);
+			EnhancedInputComponent->BindAction(PrimaryFireAction, ETriggerEvent::Triggered, this, &UGunComponent::ActivatePrimaryFireAbility);
+			EnhancedInputComponent->BindAction(PrimaryFireAction, ETriggerEvent::Completed, this, &UGunComponent::DeactivatePrimaryFireAbility);
+			EnhancedInputComponent->BindAction(SecondaryFireAction, ETriggerEvent::Triggered, this, &UGunComponent::ActivateSecondaryFireAbility);
+			EnhancedInputComponent->BindAction(SecondaryFireAction, ETriggerEvent::Completed, this, &UGunComponent::DeactivateSecondaryFireAbility);
 		}
 	}
 
@@ -152,23 +211,23 @@ void UGunComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UGunComponent, DefaultFireWeaponAbilityClass);
+	DOREPLIFETIME(UGunComponent, DefaultPrimaryFireAbilityClass);
 	DOREPLIFETIME(UGunComponent, MuzzleOffset);
 	DOREPLIFETIME(UGunComponent, FireMappingContext);
-	DOREPLIFETIME(UGunComponent, FireAction);
-	DOREPLIFETIME_CONDITION_NOTIFY(UGunComponent, FireAbilityHandle, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME(UGunComponent, PrimaryFireAction);
+	DOREPLIFETIME_CONDITION_NOTIFY(UGunComponent, PrimaryFireAbilityHandle, COND_None, REPNOTIFY_Always);
 }
 
 void UGunComponent::OnRep_FireAbilityHandle()
 {
 	if (CharacterWeakPtr.IsValid() && CharacterWeakPtr->GetAbilitySystemComponent())
 	{
-		FGameplayAbilitySpec* AbilitySpec = CharacterWeakPtr->GetAbilitySystemComponent()->FindAbilitySpecFromHandle(FireAbilityHandle);
+		FGameplayAbilitySpec* AbilitySpec = CharacterWeakPtr->GetAbilitySystemComponent()->FindAbilitySpecFromHandle(PrimaryFireAbilityHandle);
 		if (AbilitySpec)
 		{
-			FireGunAbility = Cast<UFireGunAbility_Base>(AbilitySpec->Ability);
+			PrimaryFireGunAbility = Cast<UFireGunAbility_Base>(AbilitySpec->Ability);
 			UE_LOG(LogTemp, Warning, TEXT("OnRep_FireAbilityHandle: Set FireGunAbility %s"), 
-				FireGunAbility ? TEXT("Successfully") : TEXT("Failed"));
+				PrimaryFireGunAbility ? TEXT("Successfully") : TEXT("Failed"));
 		}
 	}
 

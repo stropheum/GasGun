@@ -30,9 +30,17 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 {
 	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr) && OtherComp->IsSimulatingPhysics())
 	{
-		OtherComp->AddImpulseAtLocation(GetVelocity() * 100.0f, GetActorLocation());
+		float Mass = 100.f;
+		if (RootComponent)
+		{
+			if (const UPrimitiveComponent* PrimitiveComponent = Cast<UPrimitiveComponent>(RootComponent))
+			{
+				Mass = PrimitiveComponent->GetMass();
+			}
+		}
 
-		Destroy();
+		OtherComp->AddImpulseAtLocation(GetVelocity() * Mass, GetActorLocation());
+		// Destroy();
 	}
 }
 

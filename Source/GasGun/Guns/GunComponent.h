@@ -8,6 +8,8 @@
 #include "GunComponent.generated.h"
 
 class APlayerCharacter;
+class UFireGunAbility_Base;
+class UInputAction;
 
 UCLASS(Blueprintable, BlueprintType, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class GASGUN_API UGunComponent : public USkeletalMeshComponent
@@ -21,13 +23,22 @@ public:
 	bool AttachWeapon(APlayerCharacter* TargetCharacter);
 
 	UFUNCTION(BlueprintCallable, Category="Weapon")
-	void ActivateFireAbility();
+	void ActivatePrimaryFireAbility();
 
 	UFUNCTION(BlueprintCallable, Category="Weapon")
-	void DeactivateFireAbility();
+	void DeactivatePrimaryFireAbility();
 
 	UFUNCTION(BlueprintCallable, Category="Weapon")
-	void SetFireAbility(TSubclassOf<class UFireGunAbility_Base> FireWeaponAbilityClass);
+	void ActivateSecondaryFireAbility();
+
+	UFUNCTION(BlueprintCallable, Category="Weapon")
+	void DeactivateSecondaryFireAbility();
+
+	UFUNCTION(BlueprintCallable, Category="Weapon")
+	void SetPrimaryFireAbility(TSubclassOf<UFireGunAbility_Base> FireWeaponAbilityClass);
+
+	UFUNCTION(BlueprintCallable, Category="Weapon")
+	void SetSecondaryFireAbility(TSubclassOf<UFireGunAbility_Base> FireWeaponAbilityClass);
 	
 	TTuple<FVector, FRotator> GetProjectileSpawnPositionRotation() const;
 
@@ -42,13 +53,16 @@ protected:
 	UFUNCTION()
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION()
 	virtual void OnRep_FireAbilityHandle();
 
 	UPROPERTY(Replicated, EditDefaultsOnly, Category=Ability, meta=(AllowPrivateAccess=true))
-	TSubclassOf<class UFireGunAbility_Base> DefaultFireWeaponAbilityClass;
+	TSubclassOf<UFireGunAbility_Base> DefaultPrimaryFireAbilityClass;
+
+	UPROPERTY(Replicated, EditDefaultsOnly, Category=Ability, meta=(AllowPrivateAccess=true))
+	TSubclassOf<UFireGunAbility_Base> DefaultSecondaryFireAbilityClass;
 
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category=Gameplay, meta=(AllowPrivateAccess=true))
 	FVector MuzzleOffset;
@@ -57,13 +71,22 @@ protected:
 	TObjectPtr<class UInputMappingContext> FireMappingContext{};
 
 	UPROPERTY(Replicated, EditDefaultsOnly, Category=Input, meta=(AllowPrivateAccess=true))
-	TObjectPtr<class UInputAction> FireAction{};
+	TObjectPtr<UInputAction> PrimaryFireAction{};
+
+	UPROPERTY(Replicated, EditDefaultsOnly, Category=Input, meta=(AllowPrivateAccess=true))
+	TObjectPtr<UInputAction> SecondaryFireAction{};
 
 	UPROPERTY(ReplicatedUsing = OnRep_FireAbilityHandle)
-	FGameplayAbilitySpecHandle FireAbilityHandle;
+	FGameplayAbilitySpecHandle PrimaryFireAbilityHandle;
+
+	UPROPERTY(ReplicatedUsing = OnRep_FireAbilityHandle)
+	FGameplayAbilitySpecHandle SecondaryFireAbilityHandle;
 
 	UPROPERTY()
-	TObjectPtr<UFireGunAbility_Base> FireGunAbility{};
+	TObjectPtr<UFireGunAbility_Base> PrimaryFireGunAbility{};
+
+	UPROPERTY()
+	TObjectPtr<UFireGunAbility_Base> SecondaryFireGunAbility{};
 
 private:
 	TWeakObjectPtr<APlayerCharacter> CharacterWeakPtr{};

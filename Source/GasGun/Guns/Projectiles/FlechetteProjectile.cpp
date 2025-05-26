@@ -87,7 +87,8 @@ void AFlechetteProjectile::Fire()
 		}
 		
 		const FVector Direction = ProjectileRotation.Vector();
-		SubProjectile->GetProjectileMovement()->Velocity = Direction * ProjectileAttributes.SubProjectileVelocity;
+		SubProjectile->GetProjectileMovement()->MaxSpeed = 0.f;
+		SubProjectile->GetProjectileMovement()->Velocity = FVector::ZeroVector;
 		
 		SubProjectiles.Add(SubProjectile);
 		
