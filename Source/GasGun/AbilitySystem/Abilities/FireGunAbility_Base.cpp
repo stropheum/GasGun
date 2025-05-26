@@ -50,13 +50,3 @@ void UFireGunAbility_Base::Fire()
 		OnFireTick.Broadcast();
 	}
 }
-
-void UFireGunAbility_Base::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(UFireGunAbility_Base, ProjectileClass);
-	DOREPLIFETIME(UFireGunAbility_Base, FireSound);
-	DOREPLIFETIME(UFireGunAbility_Base, FireAnimation);
-	DOREPLIFETIME(UFireGunAbility_Base, OnFireTick);
-	DOREPLIFETIME(UFireGunAbility_Base, FireTickRate);
-}

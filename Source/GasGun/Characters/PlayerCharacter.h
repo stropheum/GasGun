@@ -27,7 +27,7 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
-	UFUNCTION()
+	UFUNCTION(BlueprintGetter)
 	UGunComponent* GetGun() const { return EquippedGun; }
 
 	UFUNCTION()
@@ -67,6 +67,6 @@ protected:
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> LookAction{};
 
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UGunComponent> EquippedGun{};
 };

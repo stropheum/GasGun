@@ -55,6 +55,29 @@ void UGunComponent::DeactivateFireAbility()
 	Asc->CancelAbilityHandle(FireAbilityHandle);
 }
 
+void UGunComponent::SetFireAbility(TSubclassOf<UFireGunAbility_Base> FireWeaponAbilityClass)
+{
+	if (CharacterWeakPtr->HasAuthority() && FireWeaponAbilityClass && CharacterWeakPtr->GetAbilitySystemComponent())
+	{
+		if (CharacterWeakPtr->HasAuthority())
+		{
+			UAbilitySystemComponent* ASC = CharacterWeakPtr->GetAbilitySystemComponent();
+			const FGameplayAbilitySpec AbilitySpec(FireWeaponAbilityClass, 1, -1, this);
+
+			if (FireAbilityHandle.IsValid())
+			{
+				ASC->CancelAbilityHandle(FireAbilityHandle);
+			}
+			
+			FireAbilityHandle = ASC->GiveAbility(AbilitySpec);
+
+			CharacterWeakPtr->ForceNetUpdate();
+            
+			FireGunAbility = Cast<UFireGunAbility_Base>(AbilitySpec.Ability);
+		}
+	}
+}
+
 TTuple<FVector, FRotator> UGunComponent::GetProjectileSpawnPositionRotation() const
 {
 	const APlayerController* PlayerController = Cast<APlayerController>(CharacterWeakPtr->GetController());
@@ -75,19 +98,7 @@ bool UGunComponent::AttachWeapon(APlayerCharacter* TargetCharacter)
 	const FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
 	AttachToComponent(CharacterWeakPtr->GetMesh1P(), AttachmentRules, FName(TEXT("GripPoint")));
 
-	if (CharacterWeakPtr->HasAuthority() && FireWeaponAbilityClass && CharacterWeakPtr->GetAbilitySystemComponent())
-	{
-		if (CharacterWeakPtr->HasAuthority())
-		{
-			UAbilitySystemComponent* ASC = CharacterWeakPtr->GetAbilitySystemComponent();
-			const FGameplayAbilitySpec AbilitySpec(FireWeaponAbilityClass, 1, -1, this);
-			FireAbilityHandle = ASC->GiveAbility(AbilitySpec);
-
-			CharacterWeakPtr->ForceNetUpdate();
-            
-			FireGunAbility = Cast<UFireGunAbility_Base>(AbilitySpec.Ability);
-		}
-	}
+	SetFireAbility(DefaultFireWeaponAbilityClass);
 
 	if (const APlayerController* PlayerController = Cast<APlayerController>(CharacterWeakPtr->GetController()))
 	{
@@ -141,7 +152,7 @@ void UGunComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UGunComponent, FireWeaponAbilityClass);
+	DOREPLIFETIME(UGunComponent, DefaultFireWeaponAbilityClass);
 	DOREPLIFETIME(UGunComponent, MuzzleOffset);
 	DOREPLIFETIME(UGunComponent, FireMappingContext);
 	DOREPLIFETIME(UGunComponent, FireAction);

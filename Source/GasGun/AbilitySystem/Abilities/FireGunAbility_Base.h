@@ -47,20 +47,19 @@ public:
 	virtual void Fire();
 
 protected:
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
-	UPROPERTY(Replicated, EditDefaultsOnly, Category=Projectile, meta=(AllowPrivateAccess=true))
+	UPROPERTY(EditDefaultsOnly, Category=Projectile, meta=(AllowPrivateAccess=true))
 	TSubclassOf<class AProjectile> ProjectileClass;
 
-	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category=Gameplay, meta=(AllowPrivateAccess=true))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay, meta=(AllowPrivateAccess=true))
 	TObjectPtr<USoundBase> FireSound{};
 
-	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = Gameplay, meta=(AllowPrivateAccess=true))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Gameplay, meta=(AllowPrivateAccess=true))
 	TObjectPtr<UAnimMontage> FireAnimation{};
 
-	UPROPERTY(Replicated, BlueprintAssignable, Category=GameplayAbilities, meta=(AllowPrivateAccess=true))
+	UPROPERTY(BlueprintAssignable, Category=GameplayAbilities, meta=(AllowPrivateAccess=true))
 	FFireGunTick OnFireTick{};
 
-	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category=GameplayAbilities, meta=(AllowPrivateAccess=true))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=GameplayAbilities, meta=(AllowPrivateAccess=true))
 	float FireTickRate = 0.1f;
 };

@@ -72,18 +72,14 @@ void UFireGunAbility_Projectile::Fire()
 	ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 	AProjectile* FiredProjectile = World->SpawnActor<AProjectile>(ProjectileClass, SpawnLocationRotation.Key, SpawnLocationRotation.Value, ActorSpawnParams);
 
-	FiredProjectile->SetOwningGun(Gun);
+	if (FiredProjectile)
+	{
+		FiredProjectile->SetOwningGun(Gun);	
+	}
 	
 	UGameplayStatics::PlaySoundAtLocation(this, FireSound, SpawnLocationRotation.Key);
 	if (UAnimInstance* AnimInstance = PlayerCharacter->GetMesh1P()->GetAnimInstance(); AnimInstance != nullptr)
 	{
 		AnimInstance->Montage_Play(FireAnimation, 1.f);
 	}
-}
-
-void UFireGunAbility_Projectile::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(UFireGunAbility_Projectile, bIsAuto);
-	DOREPLIFETIME(UFireGunAbility_Projectile, bHasFired);
 }

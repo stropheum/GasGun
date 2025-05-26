@@ -25,6 +25,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Weapon")
 	void DeactivateFireAbility();
+
+	UFUNCTION(BlueprintCallable, Category="Weapon")
+	void SetFireAbility(TSubclassOf<class UFireGunAbility_Base> FireWeaponAbilityClass);
 	
 	TTuple<FVector, FRotator> GetProjectileSpawnPositionRotation() const;
 
@@ -45,7 +48,7 @@ protected:
 	virtual void OnRep_FireAbilityHandle();
 
 	UPROPERTY(Replicated, EditDefaultsOnly, Category=Ability, meta=(AllowPrivateAccess=true))
-	TSubclassOf<class UFireGunAbility_Base> FireWeaponAbilityClass;
+	TSubclassOf<class UFireGunAbility_Base> DefaultFireWeaponAbilityClass;
 
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category=Gameplay, meta=(AllowPrivateAccess=true))
 	FVector MuzzleOffset;
