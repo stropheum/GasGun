@@ -33,9 +33,9 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		float Mass = 100.f;
 		if (RootComponent)
 		{
-			if (const UPrimitiveComponent* PrimitiveComponent = Cast<UPrimitiveComponent>(RootComponent))
+			if (const UPrimitiveComponent* PrimitiveComponent = Cast<UPrimitiveComponent>(RootComponent); PrimitiveComponent->IsSimulatingPhysics())
 			{
-				Mass = PrimitiveComponent->GetMass();
+				// Mass = PrimitiveComponent->GetMass();
 			}
 		}
 
