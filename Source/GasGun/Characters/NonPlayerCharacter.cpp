@@ -3,11 +3,14 @@
 
 #include "NonPlayerCharacter.h"
 
+#include "AIController.h"
 #include "GasGun/Components/NpcWanderComponent.h"
 
 
 ANonPlayerCharacter::ANonPlayerCharacter()
 {
+	AIControllerClass = AAIController::StaticClass();
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	PrimaryActorTick.bCanEverTick = true;
 	CreateDefaultSubobject<UNpcWanderComponent>("NpcWanderComponent");
 }

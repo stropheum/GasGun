@@ -17,7 +17,9 @@ public:
 protected:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
-	UPROPERTY()
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UPROPERTY(Replicated)
 	TArray<TObjectPtr<APlayerController>> PlayerControllerList{};
 };
 

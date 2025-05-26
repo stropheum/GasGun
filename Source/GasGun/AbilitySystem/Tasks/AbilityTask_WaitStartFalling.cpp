@@ -5,6 +5,7 @@
 
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GasGun/Guns/Projectiles/FlechetteProjectile.h"
+#include "Net/UnrealNetwork.h"
 
 
 UAbilityTask_WaitStartFalling::UAbilityTask_WaitStartFalling()
@@ -41,4 +42,10 @@ void UAbilityTask_WaitStartFalling::OnDestroy(const bool AbilityEnded)
 	bTickingTask = false;
 	
 	Super::OnDestroy(AbilityEnded);
+}
+
+void UAbilityTask_WaitStartFalling::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UAbilityTask_WaitStartFalling, TrackedProjectile);
 }

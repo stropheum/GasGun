@@ -39,19 +39,24 @@ protected:
 	UFUNCTION()
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-	UPROPERTY(EditDefaultsOnly, Category=Ability, meta=(AllowPrivateAccess=true))
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UFUNCTION()
+	virtual void OnRep_FireAbilityHandle();
+
+	UPROPERTY(Replicated, EditDefaultsOnly, Category=Ability, meta=(AllowPrivateAccess=true))
 	TSubclassOf<class UFireGunAbility_Base> FireWeaponAbilityClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay, meta=(AllowPrivateAccess=true))
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category=Gameplay, meta=(AllowPrivateAccess=true))
 	FVector MuzzleOffset;
 
-	UPROPERTY(EditDefaultsOnly, Category=Input, meta=(AllowPrivateAccess=true))
+	UPROPERTY(Replicated, EditDefaultsOnly, Category=Input, meta=(AllowPrivateAccess=true))
 	TObjectPtr<class UInputMappingContext> FireMappingContext{};
 
-	UPROPERTY(EditDefaultsOnly, Category=Input, meta=(AllowPrivateAccess=true))
+	UPROPERTY(Replicated, EditDefaultsOnly, Category=Input, meta=(AllowPrivateAccess=true))
 	TObjectPtr<class UInputAction> FireAction{};
 
-	UPROPERTY()
+	UPROPERTY(ReplicatedUsing = OnRep_FireAbilityHandle)
 	FGameplayAbilitySpecHandle FireAbilityHandle;
 
 	UPROPERTY()

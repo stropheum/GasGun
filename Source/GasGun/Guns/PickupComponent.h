@@ -16,13 +16,15 @@ class GASGUN_API UPickupComponent : public USphereComponent
 
 public:
 	
-	UPROPERTY(BlueprintAssignable, Category = "Interaction")
+	UPROPERTY(Replicated, BlueprintAssignable, Category = "Interaction")
 	FOnPickUp OnPickUp;
 
 	UPickupComponent();
 protected:
 
 	virtual void BeginPlay() override;
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION()
 	void OnSphereBeginOverlap(

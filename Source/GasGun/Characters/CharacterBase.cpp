@@ -3,6 +3,7 @@
 #include "CharacterBase.h"
 #include "AbilitySystemComponent.h"
 #include "GasGun/AbilitySystem/AttributeSets/CharacterBaseAttributeSet.h"
+#include "Net/UnrealNetwork.h"
 
 
 ACharacterBase::ACharacterBase()
@@ -11,6 +12,7 @@ ACharacterBase::ACharacterBase()
 	AttributeSet = CreateDefaultSubobject<UCharacterBaseAttributeSet>("AttributeSet");
 	GameplayTasksComponent = CreateDefaultSubobject<UGameplayTasksComponent>("GameplayTasksComponent");
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
 }
 
 void ACharacterBase::OnHealthChangeCallback(const FOnAttributeChangeData& OnAttributeChangeData)
@@ -66,4 +68,17 @@ void ACharacterBase::Tick(const float DeltaTime)
 void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+
+UAbilitySystemComponent* ACharacterBase::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
+void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ACharacterBase, AbilitySystemComponent);
+	DOREPLIFETIME(ACharacterBase, AttributeSet);
+	DOREPLIFETIME(ACharacterBase, GameplayTasksComponent);
 }

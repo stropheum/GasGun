@@ -13,29 +13,32 @@
 #include "Engine/LocalPlayer.h"
 #include "Engine/World.h"
 #include "GasGun/AbilitySystem/Abilities/FireGunAbility_Base.h"
+#include "Net/UnrealNetwork.h"
 
 UGunComponent::UGunComponent()
 {
+	SetIsReplicatedByDefault(true);
 	MuzzleOffset = FVector(56.5f, 14.25f, 11.3f);
 }
 
 void UGunComponent::ActivateFireAbility()
 {
-	if (!CharacterWeakPtr.IsValid() || CharacterWeakPtr->GetController() == nullptr)
+	if (!CharacterWeakPtr.IsValid() || !CharacterWeakPtr->GetController())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Attempted to fire with improper conditions"));
 		return;
 	}
-
-	if (!FireAbilityHandle.IsValid() || !FireGunAbility)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No FireRifleAbility set"));
-		return;
-	}
-
+	
 	UAbilitySystemComponent* Asc = CharacterWeakPtr->GetAbilitySystemComponent();
+	if (!Asc || !FireAbilityHandle.IsValid() || !FireGunAbility)
+	{
+		return;
+	}
+
 	FGameplayAbilitySpec* AbilitySpec = Asc->FindAbilitySpecFromHandle(FireAbilityHandle);
-	ensureMsgf(AbilitySpec, TEXT("Ability spec not found for fire ability handle"));
+	if (!AbilitySpec)
+	{
+		return;
+	}
 
 	Asc->TryActivateAbility(FireAbilityHandle);
 }
@@ -72,12 +75,18 @@ bool UGunComponent::AttachWeapon(APlayerCharacter* TargetCharacter)
 	const FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
 	AttachToComponent(CharacterWeakPtr->GetMesh1P(), AttachmentRules, FName(TEXT("GripPoint")));
 
-	if (FireWeaponAbilityClass && CharacterWeakPtr->GetAbilitySystemComponent())
+	if (CharacterWeakPtr->HasAuthority() && FireWeaponAbilityClass && CharacterWeakPtr->GetAbilitySystemComponent())
 	{
-		const FGameplayAbilitySpec AbilitySpec(FireWeaponAbilityClass, 1, -1, this);
-		FireAbilityHandle = CharacterWeakPtr->GetAbilitySystemComponent()->GiveAbility(AbilitySpec);
-		FireGunAbility = Cast<UFireGunAbility_Base>(AbilitySpec.Ability);
-		check(FireGunAbility);
+		if (CharacterWeakPtr->HasAuthority())
+		{
+			UAbilitySystemComponent* ASC = CharacterWeakPtr->GetAbilitySystemComponent();
+			const FGameplayAbilitySpec AbilitySpec(FireWeaponAbilityClass, 1, -1, this);
+			FireAbilityHandle = ASC->GiveAbility(AbilitySpec);
+
+			CharacterWeakPtr->ForceNetUpdate();
+            
+			FireGunAbility = Cast<UFireGunAbility_Base>(AbilitySpec.Ability);
+		}
 	}
 
 	if (const APlayerController* PlayerController = Cast<APlayerController>(CharacterWeakPtr->GetController()))
@@ -126,4 +135,30 @@ void UGunComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	}
 
 	Super::EndPlay(EndPlayReason);
+}
+
+void UGunComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UGunComponent, FireWeaponAbilityClass);
+	DOREPLIFETIME(UGunComponent, MuzzleOffset);
+	DOREPLIFETIME(UGunComponent, FireMappingContext);
+	DOREPLIFETIME(UGunComponent, FireAction);
+	DOREPLIFETIME_CONDITION_NOTIFY(UGunComponent, FireAbilityHandle, COND_None, REPNOTIFY_Always);
+}
+
+void UGunComponent::OnRep_FireAbilityHandle()
+{
+	if (CharacterWeakPtr.IsValid() && CharacterWeakPtr->GetAbilitySystemComponent())
+	{
+		FGameplayAbilitySpec* AbilitySpec = CharacterWeakPtr->GetAbilitySystemComponent()->FindAbilitySpecFromHandle(FireAbilityHandle);
+		if (AbilitySpec)
+		{
+			FireGunAbility = Cast<UFireGunAbility_Base>(AbilitySpec->Ability);
+			UE_LOG(LogTemp, Warning, TEXT("OnRep_FireAbilityHandle: Set FireGunAbility %s"), 
+				FireGunAbility ? TEXT("Successfully") : TEXT("Failed"));
+		}
+	}
+
 }

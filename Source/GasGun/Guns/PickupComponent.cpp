@@ -2,9 +2,12 @@
 
 #include "PickupComponent.h"
 
+#include "Net/UnrealNetwork.h"
+
 UPickupComponent::UPickupComponent()
 {
 	SphereRadius = 32.f;
+	SetIsReplicatedByDefault(true);
 }
 
 void UPickupComponent::BeginPlay()
@@ -12,6 +15,12 @@ void UPickupComponent::BeginPlay()
 	Super::BeginPlay();
 
 	OnComponentBeginOverlap.AddDynamic(this, &UPickupComponent::OnSphereBeginOverlap);
+}
+
+void UPickupComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UPickupComponent, OnPickUp);
 }
 
 void UPickupComponent::OnSphereBeginOverlap(

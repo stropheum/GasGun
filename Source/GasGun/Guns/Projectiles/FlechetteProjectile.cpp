@@ -53,6 +53,7 @@ void AFlechetteProjectile::Fire()
 {
 	if (RoundsFired >= ProjectileAttributes.AmmoCapacity)
 	{
+		Destroy();
 		return;
 	}
 	

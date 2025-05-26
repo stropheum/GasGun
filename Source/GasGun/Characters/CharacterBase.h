@@ -37,15 +37,17 @@ public:
 
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return AbilitySystemComponent; }
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 protected:
-	UPROPERTY()
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
+	UPROPERTY(Replicated)
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent{};
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	TObjectPtr<UCharacterBaseAttributeSet> AttributeSet{};
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	TObjectPtr<UGameplayTasksComponent> GameplayTasksComponent{};
 };

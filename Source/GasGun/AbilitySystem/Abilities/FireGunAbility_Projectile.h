@@ -44,10 +44,12 @@ public:
 	virtual void Fire() override;
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category=GameplayAbilities, meta=(AllowPrivateAccess=true))
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
+	UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadWrite, Category=GameplayAbilities, meta=(AllowPrivateAccess=true))
 	bool bIsAuto{};
 
-	UPROPERTY(BlueprintReadOnly, Category=GameplayAbilities, meta=(AllowPrivateAccess=true))
+	UPROPERTY(Replicated, BlueprintReadOnly, Category=GameplayAbilities, meta=(AllowPrivateAccess=true))
 	bool bHasFired{};
 	
 	FTimerHandle FireRateTimer;

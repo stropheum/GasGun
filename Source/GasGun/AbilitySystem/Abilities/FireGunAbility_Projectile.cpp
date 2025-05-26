@@ -7,6 +7,7 @@
 #include "GasGun/Guns/GunComponent.h"
 #include "GasGun/Guns/Projectiles/Projectile.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 
 void UFireGunAbility_Projectile::ActivateAbility(
 	const FGameplayAbilitySpecHandle Handle,
@@ -78,4 +79,11 @@ void UFireGunAbility_Projectile::Fire()
 	{
 		AnimInstance->Montage_Play(FireAnimation, 1.f);
 	}
+}
+
+void UFireGunAbility_Projectile::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFireGunAbility_Projectile, bIsAuto);
+	DOREPLIFETIME(UFireGunAbility_Projectile, bHasFired);
 }

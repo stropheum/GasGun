@@ -9,6 +9,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Engine/LocalPlayer.h"
+#include "Net/UnrealNetwork.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -59,6 +60,18 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+void APlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(APlayerCharacter, Mesh1P);
+	DOREPLIFETIME(APlayerCharacter, FirstPersonCameraComponent);
+	DOREPLIFETIME(APlayerCharacter, DefaultMappingContext); 
+	DOREPLIFETIME(APlayerCharacter, JumpAction);
+	DOREPLIFETIME(APlayerCharacter, MoveAction);
+	DOREPLIFETIME(APlayerCharacter, LookAction);
+	DOREPLIFETIME(APlayerCharacter, EquippedGun);
 }
 
 void APlayerCharacter::NotifyControllerChanged()

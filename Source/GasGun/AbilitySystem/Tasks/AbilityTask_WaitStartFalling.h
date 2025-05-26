@@ -31,6 +31,8 @@ protected:
 	
 	virtual void OnDestroy(bool AbilityEnded) override;
 
-	UPROPERTY()
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UPROPERTY(Replicated)
 	TObjectPtr<AFlechetteProjectile> TrackedProjectile{};
 };
