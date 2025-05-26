@@ -28,7 +28,7 @@ AProjectile::AProjectile()
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr) && OtherComp->IsSimulatingPhysics())
+	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr))
 	{
 		float Mass = 100.f;
 		if (RootComponent)
@@ -38,8 +38,19 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 				// Mass = PrimitiveComponent->GetMass();
 			}
 		}
-
-		OtherComp->AddImpulseAtLocation(GetVelocity() * Mass, GetActorLocation());
+		
+		if (OtherActor)
+		{
+			auto ActorRoot = Cast<UPrimitiveComponent>(OtherActor->GetRootComponent());
+			if (ActorRoot && ActorRoot->Mobility == EComponentMobility::Movable && ActorRoot->IsSimulatingPhysics())
+			{
+				ActorRoot->AddImpulseAtLocation(GetVelocity() * Mass, GetActorLocation());
+			}
+		}
+		else if (OtherComp->Mobility == EComponentMobility::Movable && OtherComp->IsSimulatingPhysics())
+		{
+			OtherComp->AddImpulseAtLocation(GetVelocity() * Mass, GetActorLocation());	
+		}
 		// Destroy();
 	}
 }
