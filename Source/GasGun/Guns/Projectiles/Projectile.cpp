@@ -1,6 +1,9 @@
 // Copyright 2025 Dale "Stropheum" Diaz
 
 #include "Projectile.h"
+
+#include "AbilitySystemComponent.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
 
@@ -60,7 +63,21 @@ UGunComponent* AProjectile::GetOwningGun() const
 	return OwningGun;
 }
 
+void AProjectile::OnSetOwningGunCalled_Implementation(UGunComponent* Gun) {}
+
 void AProjectile::SetOwningGun(UGunComponent* Gun)
 {
 	OwningGun = Gun;
+	OnSetOwningGunCalled(Gun);
+}
+
+void AProjectile::RegisterOwnerTagListener(UAbilitySystemComponent* Asc, FGameplayTag TagToRegister)
+{
+	Asc->RegisterGameplayTagEvent(TagToRegister, EGameplayTagEventType::NewOrRemoved)
+	   .AddUObject(this, &AProjectile::OnTagChanged);
+}
+
+void AProjectile::OnTagChanged(const FGameplayTag Tag, const int32 NewCount)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Tag %s changed to %d"), *Tag.ToString(), NewCount));
 }

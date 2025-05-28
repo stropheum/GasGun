@@ -44,7 +44,8 @@ public:
 
 	FVector GetMuzzleOffset() const { return MuzzleOffset; }
 
-	TWeakObjectPtr<APlayerCharacter> GetOwningPlayerWeakPtr() const;
+	UFUNCTION(BlueprintCallable, Category="Player")
+	APlayerCharacter* GetOwningPlayer() const;
 
 protected:
 	UFUNCTION()

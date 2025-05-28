@@ -181,9 +181,9 @@ bool UGunComponent::AttachWeapon(APlayerCharacter* TargetCharacter)
 	return true;
 }
 
-TWeakObjectPtr<APlayerCharacter> UGunComponent::GetOwningPlayerWeakPtr() const
+APlayerCharacter* UGunComponent::GetOwningPlayer() const
 {
-	return CharacterWeakPtr;
+	return CharacterWeakPtr.Get();
 }
 
 void UGunComponent::BeginPlay()

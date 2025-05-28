@@ -141,7 +141,7 @@ void UFireGunAbility_Beam::PerformRaycast() const
         AActor* OtherActor = Hit.GetActor();
         UPrimitiveComponent* ImpactComponent = Hit.GetComponent();
         ACharacterBase* ImpactCharacter = Cast<ACharacterBase>(OtherActor);
-        TWeakObjectPtr<APlayerCharacter> OwningPlayer = OwningGun->GetOwningPlayerWeakPtr();
+        TWeakObjectPtr<APlayerCharacter> OwningPlayer = OwningGun->GetOwningPlayer();
     	check(OwningPlayer.IsValid());
 
         if (OtherActor && OtherActor != OwningPlayer.Get() && ImpactComponent)

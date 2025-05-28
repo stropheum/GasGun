@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "Projectile.generated.h"
 
+struct FGameplayTag;
+class UAbilitySystemComponent;
 class UGunComponent;
 class USphereComponent;
 class UProjectileMovementComponent;
@@ -40,12 +42,20 @@ public:
 
 	UFUNCTION()
 	void SetOwningGun(UGunComponent* Gun);
+	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category=Projectile)
+	void OnSetOwningGunCalled(UGunComponent* Gun);
+
+	UFUNCTION(BlueprintCallable, Category=Projectile)
+	void RegisterOwnerTagListener(UAbilitySystemComponent* Asc, FGameplayTag TagToRegister);
 
 	USphereComponent* GetCollisionComp() const { return CollisionComp; }
 	
 	UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }
 
 protected:
+	UFUNCTION()
+	virtual void OnTagChanged(const FGameplayTag Tag, int32 NewCount);
 	
 	UPROPERTY(VisibleDefaultsOnly, Category=Projectile)
 	TObjectPtr<USphereComponent> CollisionComp{};
