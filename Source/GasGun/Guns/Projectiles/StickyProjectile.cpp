@@ -36,8 +36,6 @@ void AStickyProjectile::BeginPlay()
 
 void AStickyProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	// Super::OnHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
-
 	if (OtherActor && OtherActor != this && OtherComp)
 	{
 		AttachToActor(OtherActor, FAttachmentTransformRules::KeepWorldTransform);
