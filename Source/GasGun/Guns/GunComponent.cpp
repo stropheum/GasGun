@@ -212,10 +212,15 @@ void UGunComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UGunComponent, DefaultPrimaryFireAbilityClass);
+	DOREPLIFETIME(UGunComponent, DefaultSecondaryFireAbilityClass);
 	DOREPLIFETIME(UGunComponent, MuzzleOffset);
 	DOREPLIFETIME(UGunComponent, FireMappingContext);
 	DOREPLIFETIME(UGunComponent, PrimaryFireAction);
+	DOREPLIFETIME(UGunComponent, SecondaryFireAction);
+	DOREPLIFETIME(UGunComponent, PrimaryFireGunAbility);
+	DOREPLIFETIME(UGunComponent, SecondaryFireGunAbility);
 	DOREPLIFETIME_CONDITION_NOTIFY(UGunComponent, PrimaryFireAbilityHandle, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UGunComponent, SecondaryFireAbilityHandle, COND_None, REPNOTIFY_Always);
 }
 
 void UGunComponent::OnRep_FireAbilityHandle()

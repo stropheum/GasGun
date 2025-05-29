@@ -180,7 +180,10 @@ void UFireGunAbility_Beam::PerformRaycast() const
         UE_LOG(LogTemp, Warning, TEXT("No hit detected! Check cube collision settings."));
     }
 
-    NiagaraEffect->SetVectorParameter(TEXT("Beam End"), BeamEnd);
+	if (NiagaraEffect)
+	{
+		NiagaraEffect->SetVectorParameter(TEXT("Beam End"), BeamEnd);	
+	}
 }
 
 void UFireGunAbility_Beam::OnBeamTick(float DeltaTime)

@@ -83,10 +83,10 @@ protected:
 	UPROPERTY(ReplicatedUsing = OnRep_FireAbilityHandle)
 	FGameplayAbilitySpecHandle SecondaryFireAbilityHandle;
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	TObjectPtr<UFireGunAbility_Base> PrimaryFireGunAbility{};
 
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	TObjectPtr<UFireGunAbility_Base> SecondaryFireGunAbility{};
 
 private:
