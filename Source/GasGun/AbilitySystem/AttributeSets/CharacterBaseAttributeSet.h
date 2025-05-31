@@ -43,27 +43,27 @@ public:
 	FOnShieldRegenDelayChanged OnShieldRegenDelayChanged;
 	
 	UPROPERTY(BlueprintReadOnly, Category="Attributes", meta=(AllowPrivateAccess="true"))
-	FGameplayAttributeData Health;
+	FGameplayAttributeData Health = 100.f;
 	ATTRIBUTE_ACCESSORS(UCharacterBaseAttributeSet, Health)
 	
 	UPROPERTY(BlueprintReadOnly, Category="Attributes", meta=(AllowPrivateAccess="true"))
-	FGameplayAttributeData MaxHealth;
+	FGameplayAttributeData MaxHealth = 100.f;
 	ATTRIBUTE_ACCESSORS(UCharacterBaseAttributeSet, MaxHealth)
 	
 	UPROPERTY(BlueprintReadOnly, Category="Attributes", meta=(AllowPrivateAccess="true"))
-	FGameplayAttributeData Shield;
+	FGameplayAttributeData Shield = 100.f;
 	ATTRIBUTE_ACCESSORS(UCharacterBaseAttributeSet, Shield)
 	
 	UPROPERTY(BlueprintReadOnly, Category="Attributes", meta=(AllowPrivateAccess="true"))
-	FGameplayAttributeData MaxShield;
+	FGameplayAttributeData MaxShield = 100.f;
 	ATTRIBUTE_ACCESSORS(UCharacterBaseAttributeSet, MaxShield)
 	
 	UPROPERTY(BlueprintReadOnly, Category="Attributes", meta=(AllowPrivateAccess="true"))
-	FGameplayAttributeData ShieldRegenDelay;
+	FGameplayAttributeData ShieldRegenDelay = 0.5f;
 	ATTRIBUTE_ACCESSORS(UCharacterBaseAttributeSet, ShieldRegenDelay)
 	
 	UPROPERTY(BlueprintReadOnly, Category="Attributes", meta=(AllowPrivateAccess="true"))
-	FGameplayAttributeData ShieldRegenRate;
+	FGameplayAttributeData ShieldRegenRate = 0.2f;
 	ATTRIBUTE_ACCESSORS(UCharacterBaseAttributeSet, ShieldRegenRate)
 
 protected:

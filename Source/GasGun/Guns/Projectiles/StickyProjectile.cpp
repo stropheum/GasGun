@@ -8,6 +8,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "GasGun/Characters/CharacterBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "PhysicsEngine/RadialForceActor.h"
 #include "PhysicsEngine/RadialForceComponent.h"
@@ -36,9 +37,19 @@ void AStickyProjectile::BeginPlay()
 
 void AStickyProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	Super::OnHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
+	
 	if (OtherActor && OtherActor != this && OtherComp)
 	{
-		AttachToActor(OtherActor, FAttachmentTransformRules::KeepWorldTransform);
+		if (const ACharacterBase* OtherCharacter = Cast<ACharacterBase>(OtherActor); OtherCharacter)
+		{
+			USkeletalMeshComponent* OtherCharacterMesh = OtherCharacter->GetMesh();
+			AttachToComponent(OtherCharacterMesh, FAttachmentTransformRules::KeepWorldTransform);
+		}
+		else
+		{
+			AttachToActor(OtherActor, FAttachmentTransformRules::KeepWorldTransform);	
+		}
 
 		if (ProjectileMovement)
 		{

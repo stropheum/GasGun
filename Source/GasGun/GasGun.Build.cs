@@ -20,7 +20,9 @@ public class GasGun : ModuleRules
 			"GameplayTasks", 
 			"GameplayTags",
 			"NavigationSystem",
-			"Niagara", 
+			"Niagara",
+			"NetCommon",
+			"Networking",
 		});
 	}
 }

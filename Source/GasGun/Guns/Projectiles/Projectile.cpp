@@ -4,11 +4,18 @@
 
 #include "AbilitySystemComponent.h"
 #include "GameplayTagContainer.h"
+#include "NativeGameplayTags.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
+#include "GasGun/AbilitySystem/AttributeSets/ProjectileAttributeSet.h"
+#include "GasGun/AbilitySystem/Data/NativeGameplayTags.h"
+#include "GasGun/Characters/CharacterBase.h"
+#include "Net/UnrealNetwork.h"
 
 AProjectile::AProjectile() 
 {
+	AttributeSet = CreateDefaultSubobject<UProjectileAttributeSet>("AttributeSet");
+	
 	CollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
 	CollisionComp->InitSphereRadius(5.0f);
 	CollisionComp->BodyInstance.SetCollisionProfileName("Projectile");
@@ -33,28 +40,14 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 {
 	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr))
 	{
-		float Mass = 100.f;
-		if (RootComponent)
-		{
-			if (const UPrimitiveComponent* PrimitiveComponent = Cast<UPrimitiveComponent>(RootComponent); PrimitiveComponent->IsSimulatingPhysics())
-			{
-				// Mass = PrimitiveComponent->GetMass();
-			}
-		}
-		
 		if (OtherActor)
 		{
-			auto ActorRoot = Cast<UPrimitiveComponent>(OtherActor->GetRootComponent());
-			if (ActorRoot && ActorRoot->Mobility == EComponentMobility::Movable && ActorRoot->IsSimulatingPhysics())
-			{
-				ActorRoot->AddImpulseAtLocation(GetVelocity() * Mass, GetActorLocation());
-			}
+			OnActorHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
 		}
 		else if (OtherComp->Mobility == EComponentMobility::Movable && OtherComp->IsSimulatingPhysics())
 		{
 			OtherComp->AddImpulseAtLocation(GetVelocity() * Mass, GetActorLocation());	
 		}
-		// Destroy();
 	}
 }
 
@@ -77,7 +70,51 @@ void AProjectile::RegisterOwnerTagListener(UAbilitySystemComponent* Asc, FGamepl
 	   .AddUObject(this, &AProjectile::OnTagChanged);
 }
 
+void AProjectile::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AProjectile, AttributeSet);
+	DOREPLIFETIME(AProjectile, CollisionComp);
+	DOREPLIFETIME(AProjectile, ProjectileMovement);
+	DOREPLIFETIME(AProjectile, OwningGun);
+	DOREPLIFETIME(AProjectile, DamageEffectClass);
+}
+
 void AProjectile::OnTagChanged(const FGameplayTag Tag, const int32 NewCount)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Tag %s changed to %d"), *Tag.ToString(), NewCount));
+	
+}
+
+void AProjectile::OnActorHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	if (const ACharacterBase* Character = Cast<ACharacterBase>(OtherActor))
+	{
+		if (UAbilitySystemComponent* HitCharacterAcs = Character->GetAbilitySystemComponent();
+			ensureMsgf(HitCharacterAcs, TEXT("No AbilitySystemComponent set for %s"), *GetName()))
+		{
+			FGameplayEffectContextHandle EffectContext = HitCharacterAcs->MakeEffectContext();
+			EffectContext.AddSourceObject(this);
+			EffectContext.AddHitResult(Hit);
+
+			if (!DamageEffectClass)
+			{
+				return;
+			}
+			
+			if (const FGameplayEffectSpecHandle SpecHandle = HitCharacterAcs->MakeOutgoingSpec(DamageEffectClass, 1, EffectContext);
+				ensureMsgf(SpecHandle.IsValid(), TEXT("SpecHandle == nullptr for %s"), *GetName()))
+			{
+				const float DamageValue = AttributeSet->GetDamage();
+				const FGameplayTag ProjectileDamageTag = NativeGameplayTags::Projectile::TAG_DamageType_DirectDamage.GetTag();
+				SpecHandle.Data->SetSetByCallerMagnitude(ProjectileDamageTag, DamageValue);
+				
+				HitCharacterAcs->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);
+			}
+		}	
+	}
+
+	if (UPrimitiveComponent* ActorRoot = Cast<UPrimitiveComponent>(OtherActor->GetRootComponent()); ActorRoot && ActorRoot->Mobility == EComponentMobility::Movable && ActorRoot->IsSimulatingPhysics())
+	{
+		ActorRoot->AddImpulseAtLocation(GetVelocity() * Mass, GetActorLocation());
+	}
 }

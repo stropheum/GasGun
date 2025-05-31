@@ -23,5 +23,5 @@ void UAbilityTask_WaitForTagOnOwner::Activate()
 
 void UAbilityTask_WaitForTagOnOwner::OnTagChanged(const FGameplayTag Tag, int32 NewCount)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT("Tag %s changed to %d"), *Tag.ToString(), NewCount));
+	
 }

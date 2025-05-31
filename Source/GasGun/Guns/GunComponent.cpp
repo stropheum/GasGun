@@ -51,6 +51,11 @@ void UGunComponent::DeactivatePrimaryFireAbility()
 		return;
 	}
 
+	if (!CharacterWeakPtr.IsValid())
+	{
+		return;
+	}
+	
 	UAbilitySystemComponent* Asc = CharacterWeakPtr->GetAbilitySystemComponent();
 	Asc->CancelAbilityHandle(PrimaryFireAbilityHandle);
 }
@@ -82,6 +87,11 @@ void UGunComponent::DeactivateSecondaryFireAbility()
 	if (!SecondaryFireAbilityHandle.IsValid() || !SecondaryFireGunAbility)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("No FireAbility set"));
+		return;
+	}
+
+	if (!CharacterWeakPtr.IsValid())
+	{
 		return;
 	}
 

@@ -16,7 +16,13 @@ ACharacterBase::ACharacterBase()
 	bReplicates = true;
 }
 
-void ACharacterBase::OnHealthChangeCallback(const FOnAttributeChangeData& OnAttributeChangeData) {}
+void ACharacterBase::OnHealthChangeCallback(const FOnAttributeChangeData& OnAttributeChangeData)
+{
+	if (OnAttributeChangeData.NewValue <= 0.f)
+	{
+		Kill();
+	}
+}
 
 void ACharacterBase::OnMaxHealthChangeCallback(const FOnAttributeChangeData& OnAttributeChangeData) {}
 
@@ -72,12 +78,12 @@ void ACharacterBase::Kill()
 void ACharacterBase::Ragdoll()
 {
 	if (const auto Capsule = GetCapsuleComponent();
-		ensureMsgf(Capsule, TEXT("No Capsule Component found for %s"), *GetName()))
+		ensureMsgf(Capsule != nullptr, TEXT("No Capsule Component found for %s"), *GetName()))
 	{
 		Capsule->DestroyComponent();
 	}
 	if (const auto MeshComponent = GetMesh();
-		ensureMsgf(MeshComponent, TEXT("No Mesh Component found for %s"), *GetName()))
+		ensureMsgf(MeshComponent != nullptr, TEXT("No Mesh Component found for %s"), *GetName()))
 	{
 		MeshComponent->SetSimulatePhysics(true);
 	}
