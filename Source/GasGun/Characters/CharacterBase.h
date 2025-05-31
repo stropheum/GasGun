@@ -39,8 +39,12 @@ public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+	virtual void Kill();
+
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	virtual void Ragdoll();
 	
 	UPROPERTY(Replicated)
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent{};

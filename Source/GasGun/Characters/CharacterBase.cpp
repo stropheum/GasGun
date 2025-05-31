@@ -2,6 +2,7 @@
 
 #include "CharacterBase.h"
 #include "AbilitySystemComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GasGun/AbilitySystem/AttributeSets/CharacterBaseAttributeSet.h"
 #include "Net/UnrealNetwork.h"
 
@@ -15,36 +16,24 @@ ACharacterBase::ACharacterBase()
 	bReplicates = true;
 }
 
-void ACharacterBase::OnHealthChangeCallback(const FOnAttributeChangeData& OnAttributeChangeData)
-{
-}
+void ACharacterBase::OnHealthChangeCallback(const FOnAttributeChangeData& OnAttributeChangeData) {}
 
-void ACharacterBase::OnMaxHealthChangeCallback(const FOnAttributeChangeData& OnAttributeChangeData)
-{
-}
+void ACharacterBase::OnMaxHealthChangeCallback(const FOnAttributeChangeData& OnAttributeChangeData) {}
 
-void ACharacterBase::OnShieldChangeCallback(const FOnAttributeChangeData& OnAttributeChangeData)
-{
-}
+void ACharacterBase::OnShieldChangeCallback(const FOnAttributeChangeData& OnAttributeChangeData) {}
 
-void ACharacterBase::OnMaxShieldChangeCallback(const FOnAttributeChangeData& OnAttributeChangeData)
-{
-}
+void ACharacterBase::OnMaxShieldChangeCallback(const FOnAttributeChangeData& OnAttributeChangeData) {}
 
-void ACharacterBase::OnShieldRegenRateChangeCallback(const FOnAttributeChangeData& OnAttributeChangeData)
-{
-}
+void ACharacterBase::OnShieldRegenRateChangeCallback(const FOnAttributeChangeData& OnAttributeChangeData) {}
 
-void ACharacterBase::OnShieldRegenDelayChangeCallback(const FOnAttributeChangeData& OnAttributeChangeData)
-{
-}
+void ACharacterBase::OnShieldRegenDelayChangeCallback(const FOnAttributeChangeData& OnAttributeChangeData) {}
 
 void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 	check(AbilitySystemComponent);
 	check(AttributeSet);
-	
+
 	AbilitySystemComponent->AddAttributeSetSubobject(AttributeSet.Get());
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(AttributeSet->GetHealthAttribute())
 	                      .AddUObject(this, &ACharacterBase::OnHealthChangeCallback);
@@ -73,6 +62,25 @@ void ACharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 UAbilitySystemComponent* ACharacterBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
+}
+
+void ACharacterBase::Kill()
+{
+	Ragdoll();
+}
+
+void ACharacterBase::Ragdoll()
+{
+	if (const auto Capsule = GetCapsuleComponent();
+		ensureMsgf(Capsule, TEXT("No Capsule Component found for %s"), *GetName()))
+	{
+		Capsule->DestroyComponent();
+	}
+	if (const auto MeshComponent = GetMesh();
+		ensureMsgf(MeshComponent, TEXT("No Mesh Component found for %s"), *GetName()))
+	{
+		MeshComponent->SetSimulatePhysics(true);
+	}
 }
 
 void ACharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

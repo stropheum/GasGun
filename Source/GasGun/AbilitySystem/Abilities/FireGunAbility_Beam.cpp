@@ -164,13 +164,11 @@ void UFireGunAbility_Beam::PerformRaycast() const
             	const float RawMass = ImpactComponent->GetMass() * ImpactComponent->GetMassScale();
                 ImpactComponent->AddImpulseAtLocation(Impulse * RawMass, Hit.ImpactPoint);
             }
-            // else if (ImpactCharacter && ImpactCharacter->IsDead())
         	else if (ImpactCharacter)
             {
+        		ImpactCharacter->Kill();
 	            const UCapsuleComponent* Capsule = ImpactCharacter->GetCapsuleComponent();
-        		
         		const float RawMass = Capsule->IsSimulatingPhysics() ? Capsule->GetMass() * Capsule->GetMassScale() : 100.f;
-                ImpactCharacter->GetMesh()->SetSimulatePhysics(true);
                 ImpactCharacter->GetMesh()->AddImpulseAtLocation(Impulse * RawMass, Hit.ImpactPoint);
             }
         }
