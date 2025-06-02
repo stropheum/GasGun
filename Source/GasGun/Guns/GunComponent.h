@@ -39,7 +39,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Weapon")
 	void SetSecondaryFireAbility(TSubclassOf<UFireGunAbility_Base> FireWeaponAbilityClass);
-	
+
 	TTuple<FVector, FRotator> GetProjectileSpawnPositionRotation() const;
 
 	FVector GetMuzzleOffset() const { return MuzzleOffset; }
@@ -47,14 +47,34 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Player")
 	APlayerCharacter* GetOwningPlayer() const;
 
+	UFUNCTION(BlueprintCallable)
+	void UpdateGunAimingWithIK();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Aiming")
+	float AimingRange = 10000.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Aiming")
+	bool bEnableAimAssist = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Positioning")
+	FVector GunPositionOffset = FVector(20.0f, 15.0f, -5.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Positioning")
+	FRotator GunModelCorrection = FRotator(0.0f, -90.0f, 0.0f);
+
 protected:
 	UFUNCTION()
 	virtual void BeginPlay() override;
-	
+
 	UFUNCTION()
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+private:
+	FVector GetCameraAimHitLocation() const;
+	FTransform CalculateAdjustedGunTransform(const FVector& TargetLocation);
 
 	UFUNCTION()
 	virtual void OnRep_FireAbilityHandle();

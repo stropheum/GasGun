@@ -18,7 +18,12 @@
 UGunComponent::UGunComponent()
 {
 	SetIsReplicatedByDefault(true);
+	PrimaryComponentTick.bCanEverTick = true;
 	MuzzleOffset = FVector(56.5f, 14.25f, 11.3f);
+	AimingRange = 10000.0f;
+	bEnableAimAssist = true;
+	GunPositionOffset = FVector(20.0f, 15.0f, 0.0f); // More forward and to the right
+	GunModelCorrection = FRotator(0.0f, -90.0f, 0.0f); // Corrects gun model orientation
 }
 
 void UGunComponent::ActivatePrimaryFireAbility()
@@ -162,6 +167,7 @@ bool UGunComponent::AttachWeapon(APlayerCharacter* TargetCharacter)
 		return false;
 	}
 
+	// Use SnapToTarget to get the initial transform correct
 	const FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
 	AttachToComponent(CharacterWeakPtr->GetMesh1P(), AttachmentRules, FName(TEXT("GripPoint")));
 
@@ -229,6 +235,10 @@ void UGunComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	DOREPLIFETIME(UGunComponent, SecondaryFireAction);
 	DOREPLIFETIME(UGunComponent, PrimaryFireGunAbility);
 	DOREPLIFETIME(UGunComponent, SecondaryFireGunAbility);
+	DOREPLIFETIME(UGunComponent, AimingRange);
+	DOREPLIFETIME(UGunComponent, bEnableAimAssist);
+	DOREPLIFETIME(UGunComponent, GunPositionOffset);
+	DOREPLIFETIME(UGunComponent, GunModelCorrection);
 	DOREPLIFETIME_CONDITION_NOTIFY(UGunComponent, PrimaryFireAbilityHandle, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UGunComponent, SecondaryFireAbilityHandle, COND_None, REPNOTIFY_Always);
 }
@@ -245,5 +255,115 @@ void UGunComponent::OnRep_FireAbilityHandle()
 				PrimaryFireGunAbility ? TEXT("Successfully") : TEXT("Failed"));
 		}
 	}
+}
 
+void UGunComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (bEnableAimAssist && CharacterWeakPtr.IsValid())
+	{
+		UpdateGunAimingWithIK();
+		const TTuple<FVector, FRotator> SpawnPositionRotation = GetProjectileSpawnPositionRotation();
+		DrawDebugLine(GetWorld(), SpawnPositionRotation.Key, GetCameraAimHitLocation(), FColor::Red, false, 0.0f, 0.0f, 2.0f);
+	}
+}
+
+void UGunComponent::UpdateGunAimingWithIK()
+{
+	if (!bEnableAimAssist || !CharacterWeakPtr.IsValid())
+	{
+		return;
+	}
+
+	USkeletalMeshComponent* CharacterMesh = CharacterWeakPtr->GetMesh1P();
+	if (!CharacterMesh)
+	{
+		return;
+	}
+
+	FVector HitLocation = GetCameraAimHitLocation();
+	FTransform AdjustedTransform = CalculateAdjustedGunTransform(HitLocation);
+
+	SetWorldTransform(AdjustedTransform);
+}
+
+FVector UGunComponent::GetCameraAimHitLocation() const
+{
+	if (!CharacterWeakPtr.IsValid())
+	{
+		return FVector::ZeroVector;
+	}
+
+	const APlayerController* PlayerController = Cast<APlayerController>(CharacterWeakPtr->GetController());
+	if (!PlayerController || !PlayerController->PlayerCameraManager)
+	{
+		return FVector::ZeroVector;
+	}
+
+	FVector CameraLocation = PlayerController->PlayerCameraManager->GetCameraLocation();
+	FRotator CameraRotation = PlayerController->PlayerCameraManager->GetCameraRotation();
+	FVector CameraForward = CameraRotation.Vector();
+
+	FVector TraceStart = CameraLocation;
+	FVector TraceEnd = CameraLocation + (CameraForward * AimingRange);
+
+	FHitResult HitResult;
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(GetOwner());
+	QueryParams.AddIgnoredActor(CharacterWeakPtr.Get());
+	QueryParams.bTraceComplex = true;
+
+	bool bHit = GetWorld()->LineTraceSingleByChannel(
+		HitResult,
+		TraceStart,
+		TraceEnd,
+		ECC_Visibility,
+		QueryParams
+	);
+
+	return bHit ? HitResult.Location : TraceEnd;
+}
+
+FTransform UGunComponent::CalculateAdjustedGunTransform(const FVector& TargetLocation)
+{
+	USkeletalMeshComponent* CharacterMesh = CharacterWeakPtr->GetMesh1P();
+	if (!CharacterMesh)
+	{
+		return GetComponentTransform();
+	}
+
+	const APlayerController* PlayerController = Cast<APlayerController>(CharacterWeakPtr->GetController());
+	if (!PlayerController || !PlayerController->PlayerCameraManager)
+	{
+		return GetComponentTransform();
+	}
+
+	FRotator CameraRotation = PlayerController->PlayerCameraManager->GetCameraRotation();
+
+	FTransform GripSocketTransform = CharacterMesh->GetSocketTransform(FName("GripPoint"));
+
+	FVector CameraForward = CameraRotation.Vector();
+	FVector CameraRight = FRotationMatrix(CameraRotation).GetScaledAxis(EAxis::Y);
+	FVector CameraUp = FRotationMatrix(CameraRotation).GetScaledAxis(EAxis::Z);
+
+	FVector OffsetLocation = GripSocketTransform.GetLocation();
+	OffsetLocation += CameraForward * GunPositionOffset.X; // Forward
+	OffsetLocation += CameraRight * GunPositionOffset.Y;   // Right
+	OffsetLocation += CameraUp * GunPositionOffset.Z;      // Up
+
+	FVector AimDirection = (TargetLocation - OffsetLocation).GetSafeNormal();
+	FRotator AimRotation = AimDirection.Rotation();
+
+	FQuat CorrectionQuat = GunModelCorrection.Quaternion();
+	FQuat AimQuat = AimRotation.Quaternion();
+
+	FQuat FinalRotation = AimQuat * CorrectionQuat;
+
+	FTransform AdjustedTransform;
+	AdjustedTransform.SetLocation(OffsetLocation);
+	AdjustedTransform.SetRotation(FinalRotation);
+	AdjustedTransform.SetScale3D(GripSocketTransform.GetScale3D());
+
+	return AdjustedTransform;
 }
