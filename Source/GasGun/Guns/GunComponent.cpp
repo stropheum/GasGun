@@ -22,8 +22,8 @@ UGunComponent::UGunComponent()
 	MuzzleOffset = FVector(56.5f, 14.25f, 11.3f);
 	AimingRange = 10000.0f;
 	bEnableAimAssist = true;
-	GunPositionOffset = FVector(20.0f, 15.0f, 0.0f); // More forward and to the right
-	GunModelCorrection = FRotator(0.0f, -90.0f, 0.0f); // Corrects gun model orientation
+	GunPositionOffset = FVector(20.0f, 15.0f, 0.0f);
+	GunModelCorrection = FRotator(0.0f, -90.0f, 0.0f);
 }
 
 void UGunComponent::ActivatePrimaryFireAbility()
