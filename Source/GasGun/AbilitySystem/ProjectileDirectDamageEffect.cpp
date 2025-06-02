@@ -1,9 +1,9 @@
 ﻿// Copyright 2025 Dale "Stropheum" Diaz
 
+#include "ProjectileDirectDamageEffect.h"
 #include "GameplayEffect.h"
 #include "AbilitySystemGlobals.h"
 #include "GameplayEffectComponents/AssetTagsGameplayEffectComponent.h"
-#include "ProjectileDirectDamageEffect.h"
 #include "Data/NativeGameplayTags.h"
 #include "EffectCalculations/CharacterDamageExecution.h"
 
