@@ -39,12 +39,18 @@ public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+	virtual void PostInitProperties() override;
+
 	virtual void Kill();
+
+	UFUNCTION(Server, Reliable)
+	virtual void Server_Kill();
 
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	virtual void Ragdoll();
+	UFUNCTION(NetMulticast, Reliable)
+	virtual void Multicast_Ragdoll();
 	
 	UPROPERTY(Replicated)
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent{};

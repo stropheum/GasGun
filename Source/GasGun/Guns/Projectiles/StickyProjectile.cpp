@@ -3,13 +3,13 @@
 
 #include "StickyProjectile.h"
 
-#include "AbilitySystemComponent.h"
 #include "GameplayTagContainer.h"
 #include "NiagaraFunctionLibrary.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GasGun/Characters/CharacterBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 #include "PhysicsEngine/RadialForceActor.h"
 #include "PhysicsEngine/RadialForceComponent.h"
 
@@ -132,4 +132,11 @@ void AStickyProjectile::Detonate()
     
     Destroy();
 
+}
+
+void AStickyProjectile::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AStickyProjectile, DetonationNiagaraSystem);
+	DOREPLIFETIME(AStickyProjectile, DetonationSound);
 }

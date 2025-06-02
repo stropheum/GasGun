@@ -166,7 +166,7 @@ void UFireGunAbility_Beam::PerformRaycast() const
             }
         	else if (ImpactCharacter)
             {
-        		ImpactCharacter->Kill();
+        		ImpactCharacter->Server_Kill();
 	            const UCapsuleComponent* Capsule = ImpactCharacter->GetCapsuleComponent();
         		const float RawMass = Capsule->IsSimulatingPhysics() ? Capsule->GetMass() * Capsule->GetMassScale() : 100.f;
                 ImpactCharacter->GetMesh()->AddImpulseAtLocation(Impulse * RawMass, Hit.ImpactPoint);

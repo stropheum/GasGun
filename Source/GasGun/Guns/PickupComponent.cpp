@@ -20,7 +20,6 @@ void UPickupComponent::BeginPlay()
 void UPickupComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(UPickupComponent, OnPickUp);
 }
 
 void UPickupComponent::OnSphereBeginOverlap(

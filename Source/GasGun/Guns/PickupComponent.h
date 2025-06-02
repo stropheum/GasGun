@@ -16,7 +16,7 @@ class GASGUN_API UPickupComponent : public USphereComponent
 
 public:
 	
-	UPROPERTY(Replicated, BlueprintAssignable, Category = "Interaction")
+	UPROPERTY(BlueprintAssignable, Category = "Interaction")
 	FOnPickUp OnPickUp;
 
 	UPickupComponent();

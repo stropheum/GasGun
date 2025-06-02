@@ -25,10 +25,12 @@ public:
 	void Detonate();
 
 protected:
-	UPROPERTY(EditDefaultsOnly, Category=Niagara, meta=(AllowPrivateAccess=true))
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
+	
+	UPROPERTY(Replicated, EditDefaultsOnly, Category=Niagara, meta=(AllowPrivateAccess=true))
 	TObjectPtr<UNiagaraSystem> DetonationNiagaraSystem{};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Audio, meta=(AllowPrivateAccess=true))
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category=Audio, meta=(AllowPrivateAccess=true))
 	TObjectPtr<USoundBase> DetonationSound{};
 
 	virtual void OnTagChanged(const FGameplayTag Tag, int32 NewCount) override;

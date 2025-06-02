@@ -3,6 +3,7 @@
 #include "CharacterBase.h"
 #include "AbilitySystemComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GasGun/AbilitySystem/AttributeSets/CharacterBaseAttributeSet.h"
 #include "Net/UnrealNetwork.h"
 
@@ -20,7 +21,7 @@ void ACharacterBase::OnHealthChangeCallback(const FOnAttributeChangeData& OnAttr
 {
 	if (OnAttributeChangeData.NewValue <= 0.f)
 	{
-		Kill();
+		Server_Kill();
 	}
 }
 
@@ -70,18 +71,43 @@ UAbilitySystemComponent* ACharacterBase::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
-void ACharacterBase::Kill()
+void ACharacterBase::PostInitProperties()
 {
-	Ragdoll();
+	Super::PostInitProperties();
+	bReplicates = true;
 }
 
-void ACharacterBase::Ragdoll()
+void ACharacterBase::Kill()
 {
+	if (HasAuthority())
+	{
+		Server_Kill_Implementation();
+	}
+	else
+	{
+		Server_Kill();
+	}	
+}
+
+void ACharacterBase::Server_Kill_Implementation()
+{
+	Multicast_Ragdoll();
+}
+
+void ACharacterBase::Multicast_Ragdoll_Implementation()
+{
+	if (UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+		ensureMsgf(CharacterMovementComponent != nullptr, TEXT("No Character Movement Component found for %s"), *GetName()))
+	{
+		CharacterMovementComponent->DisableMovement();
+	}
+	
 	if (const auto Capsule = GetCapsuleComponent();
 		ensureMsgf(Capsule != nullptr, TEXT("No Capsule Component found for %s"), *GetName()))
 	{
 		Capsule->DestroyComponent();
 	}
+	
 	if (const auto MeshComponent = GetMesh();
 		ensureMsgf(MeshComponent != nullptr, TEXT("No Mesh Component found for %s"), *GetName()))
 	{
