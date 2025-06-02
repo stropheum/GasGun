@@ -71,6 +71,11 @@ UAbilitySystemComponent* ACharacterBase::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
+UCharacterBaseAttributeSet* ACharacterBase::GetAttributeSet() const
+{
+	return AttributeSet;
+}
+
 void ACharacterBase::PostInitProperties()
 {
 	Super::PostInitProperties();

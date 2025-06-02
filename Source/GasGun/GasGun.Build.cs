@@ -23,6 +23,7 @@ public class GasGun : ModuleRules
 			"Niagara",
 			"NetCommon",
 			"Networking",
+			"UMG",
 		});
 	}
 }

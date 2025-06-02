@@ -66,6 +66,12 @@ public:
 	FGameplayAttributeData ShieldRegenRate = 0.2f;
 	ATTRIBUTE_ACCESSORS(UCharacterBaseAttributeSet, ShieldRegenRate)
 
+	UFUNCTION(BlueprintPure, Category="Attributes", meta=(AllowPrivateAccess="true"))
+	float GetHealthPercent() const;
+
+	UFUNCTION(BlueprintPure, Category="Attributes", meta=(AllowPrivateAccess="true"))
+	float GetShieldPercent() const;
+
 protected:
 	virtual void PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const override;
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;

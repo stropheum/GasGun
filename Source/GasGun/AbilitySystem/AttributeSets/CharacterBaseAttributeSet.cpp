@@ -4,6 +4,16 @@
 #include "CharacterBaseAttributeSet.h"
 #include "GameplayEffectExtension.h"
 
+float UCharacterBaseAttributeSet::GetHealthPercent() const
+{
+	return GetHealth() / GetMaxHealth();
+}
+
+float UCharacterBaseAttributeSet::GetShieldPercent() const
+{
+	return GetShield() / GetMaxShield();
+}
+
 void UCharacterBaseAttributeSet::PreAttributeBaseChange(const FGameplayAttribute& Attribute, float& NewValue) const
 {
 	Super::PreAttributeBaseChange(Attribute, NewValue);

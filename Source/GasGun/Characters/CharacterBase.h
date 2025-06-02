@@ -39,6 +39,8 @@ public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+	virtual UCharacterBaseAttributeSet* GetAttributeSet() const;
+
 	virtual void PostInitProperties() override;
 
 	virtual void Kill();
@@ -52,10 +54,10 @@ protected:
 	UFUNCTION(NetMulticast, Reliable)
 	virtual void Multicast_Ragdoll();
 	
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Attributes", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent{};
 
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "Attributes", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UCharacterBaseAttributeSet> AttributeSet{};
 
 	UPROPERTY(Replicated)
