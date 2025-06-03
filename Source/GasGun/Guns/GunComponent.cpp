@@ -24,7 +24,14 @@ UGunComponent::UGunComponent()
 	bEnableAimAssist = true;
 	GunPositionOffset = FVector(20.0f, 15.0f, 0.0f);
 	GunModelCorrection = FRotator(0.0f, -90.0f, 0.0f);
+	
+	// Initialize with forward direction and reasonable distance
+	LastValidRelativeDirection = FVector::ForwardVector;
+	LastValidHitDistance = 1000.0f;
+	MinValidDistance = 100.0f;
+	MaxValidDistance = 8000.0f;
 }
+
 
 void UGunComponent::ActivatePrimaryFireAbility()
 {
@@ -241,6 +248,10 @@ void UGunComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	DOREPLIFETIME(UGunComponent, GunModelCorrection);
 	DOREPLIFETIME_CONDITION_NOTIFY(UGunComponent, PrimaryFireAbilityHandle, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UGunComponent, SecondaryFireAbilityHandle, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME(UGunComponent, LastValidRelativeDirection);
+	DOREPLIFETIME(UGunComponent, LastValidHitDistance);
+	DOREPLIFETIME(UGunComponent, MinValidDistance);
+	DOREPLIFETIME(UGunComponent, MaxValidDistance);
 }
 
 void UGunComponent::OnRep_FireAbilityHandle()
@@ -256,6 +267,13 @@ void UGunComponent::OnRep_FireAbilityHandle()
 		}
 	}
 }
+
+bool UGunComponent::IsValidRaycastResult(const FVector& HitLocation, const FVector& CameraLocation) const
+{
+	float Distance = FVector::Dist(HitLocation, CameraLocation);
+	return Distance >= MinValidDistance && Distance <= MaxValidDistance;
+}
+
 
 void UGunComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
@@ -291,6 +309,14 @@ FVector UGunComponent::GetCameraAimHitLocation() const
 {
 	if (!CharacterWeakPtr.IsValid())
 	{
+		const APlayerController* PlayerController = Cast<APlayerController>(CharacterWeakPtr->GetController());
+		if (PlayerController && PlayerController->PlayerCameraManager)
+		{
+			FVector CameraLocation = PlayerController->PlayerCameraManager->GetCameraLocation();
+			FRotator CameraRotation = PlayerController->PlayerCameraManager->GetCameraRotation();
+			FVector WorldDirection = CameraRotation.RotateVector(LastValidRelativeDirection);
+			return CameraLocation + (WorldDirection * LastValidHitDistance);
+		}
 		return FVector::ZeroVector;
 	}
 
@@ -321,8 +347,38 @@ FVector UGunComponent::GetCameraAimHitLocation() const
 		QueryParams
 	);
 
-	return bHit ? HitResult.Location : TraceEnd;
+	FVector CurrentHitLocation = bHit ? HitResult.Location : TraceEnd;
+	
+	if (bHit && IsValidRaycastResult(CurrentHitLocation, CameraLocation))
+	{
+		FVector DirectionToHit = (CurrentHitLocation - CameraLocation).GetSafeNormal();
+		FVector RelativeDirection = CameraRotation.UnrotateVector(DirectionToHit);
+		float HitDistance = FVector::Dist(CurrentHitLocation, CameraLocation);
+		
+		const_cast<UGunComponent*>(this)->LastValidRelativeDirection = RelativeDirection;
+		const_cast<UGunComponent*>(this)->LastValidHitDistance = HitDistance;
+		
+		return CurrentHitLocation;
+	}
+	
+	if (!bHit)
+	{
+		if (IsValidRaycastResult(TraceEnd, CameraLocation))
+		{
+			FVector RelativeDirection = FVector::ForwardVector;
+			float Distance = FVector::Dist(TraceEnd, CameraLocation);
+			
+			const_cast<UGunComponent*>(this)->LastValidRelativeDirection = RelativeDirection;
+			const_cast<UGunComponent*>(this)->LastValidHitDistance = Distance;
+			
+			return TraceEnd;
+		}
+	}
+	
+	FVector WorldDirection = CameraRotation.RotateVector(LastValidRelativeDirection);
+	return CameraLocation + (WorldDirection * LastValidHitDistance);
 }
+
 
 FTransform UGunComponent::CalculateAdjustedGunTransform(const FVector& TargetLocation)
 {

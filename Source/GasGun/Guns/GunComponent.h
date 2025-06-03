@@ -70,6 +70,7 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
@@ -108,7 +109,22 @@ private:
 
 	UPROPERTY(Replicated)
 	TObjectPtr<UFireGunAbility_Base> SecondaryFireGunAbility{};
+	
+	UPROPERTY(Replicated)
+	FVector LastValidRelativeDirection;
+    
+	UPROPERTY(Replicated)
+	float LastValidHitDistance;
+    
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Aiming", meta = (AllowPrivateAccess = "true"))
+	float MinValidDistance = 100.0f;
+    
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Aiming", meta = (AllowPrivateAccess = "true"))
+	float MaxValidDistance = 8000.0f;
+    
+	bool IsValidRaycastResult(const FVector& HitLocation, const FVector& CameraLocation) const;
 
-private:
+
+	
 	TWeakObjectPtr<APlayerCharacter> CharacterWeakPtr{};
 };
