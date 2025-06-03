@@ -55,7 +55,7 @@ public:
 	USphereComponent* GetCollisionComp() const { return CollisionComp; }
 	
 	UProjectileMovementComponent* GetProjectileMovement() const { return ProjectileMovement; }
-	
+	 
 protected:
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 	
