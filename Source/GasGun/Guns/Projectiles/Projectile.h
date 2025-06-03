@@ -80,6 +80,6 @@ protected:
 	UPROPERTY(Replicated, EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile")
 	TSubclassOf<UGameplayEffect> DamageEffectClass = UProjectileDirectDamageEffect::StaticClass();
 
-	const float Mass = 100.f;
+	const float Mass = 10.f;
 };
 

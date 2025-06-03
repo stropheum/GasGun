@@ -107,8 +107,7 @@ void ACharacterBase::Multicast_Ragdoll_Implementation()
 		CharacterMovementComponent->DisableMovement();
 	}
 	
-	if (const auto Capsule = GetCapsuleComponent();
-		ensureMsgf(Capsule != nullptr, TEXT("No Capsule Component found for %s"), *GetName()))
+	if (const auto Capsule = GetCapsuleComponent(); Capsule != nullptr)
 	{
 		Capsule->DestroyComponent();
 	}

@@ -113,6 +113,11 @@ void AProjectile::OnActorHit(UPrimitiveComponent* HitComp, AActor* OtherActor, U
 				
 				HitCharacterAcs->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);
 			}
+
+			if (OtherComp->IsSimulatingPhysics())
+			{
+				OtherComp->AddImpulseAtLocation(GetVelocity() * Mass, GetActorLocation());	
+			}
 		}	
 	}
 
