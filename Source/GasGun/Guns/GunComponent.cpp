@@ -265,7 +265,6 @@ void UGunComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 	{
 		UpdateGunAimingWithIK();
 		const TTuple<FVector, FRotator> SpawnPositionRotation = GetProjectileSpawnPositionRotation();
-		DrawDebugLine(GetWorld(), SpawnPositionRotation.Key, GetCameraAimHitLocation(), FColor::Red, false, 0.0f, 0.0f, 2.0f);
 	}
 }
 

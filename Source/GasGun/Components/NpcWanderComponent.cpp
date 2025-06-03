@@ -60,7 +60,6 @@ void UNpcWanderComponent::TickComponent(const float DeltaTime, const ELevelTick 
 				const auto OwnerLocation = GetOwner()->GetActorLocation();
 				const auto TargetLocation = PathFollowingComponent->GetCurrentTargetLocation();
 				auto DebugString = FString::Printf(TEXT("%s - %s"), *OwnerLocation.ToString(), *TargetLocation.ToString());
-				DrawDebugLine(GetWorld(), OwnerLocation, TargetLocation, FColor::Red);
 				AIController->MoveToActor(PlayerController);
 			}
 		}
