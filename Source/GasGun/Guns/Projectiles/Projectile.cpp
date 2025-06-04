@@ -46,10 +46,33 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		if (OtherActor)
 		{
 			OnActorHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
+			if (bAttachOnHit)
+			{
+				if (const ACharacterBase* OtherCharacter = Cast<ACharacterBase>(OtherActor); OtherCharacter)
+				{                                                                                           
+					USkeletalMeshComponent* OtherCharacterMesh = OtherCharacter->GetMesh();                 
+					AttachToComponent(OtherCharacterMesh, FAttachmentTransformRules::KeepWorldTransform);   
+				}                                                                                           
+				else                                                                                        
+				{                                                                                           
+					AttachToActor(OtherActor, FAttachmentTransformRules::KeepWorldTransform);	            
+				}                                                                                           
+			}
 		}
 		else if (OtherComp->Mobility == EComponentMobility::Movable && OtherComp->IsSimulatingPhysics())
 		{
-			OtherComp->AddImpulseAtLocation(GetVelocity() * Mass, GetActorLocation());	
+			OtherComp->AddImpulseAtLocation(GetVelocity() * Mass, GetActorLocation());
+
+			if (bAttachOnHit)
+			{
+				AttachToComponent(OtherComp, FAttachmentTransformRules::KeepWorldTransform);
+				if (ProjectileMovement)
+				{
+					ProjectileMovement->StopMovementImmediately();
+					SetLifeSpan(0.f);
+				}
+				CollisionComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+			}
 		}
 	}
 }
@@ -107,11 +130,14 @@ void AProjectile::OnActorHit(UPrimitiveComponent* HitComp, AActor* OtherActor, U
 			if (const FGameplayEffectSpecHandle SpecHandle = HitCharacterAcs->MakeOutgoingSpec(DamageEffectClass, 1, EffectContext);
 				ensureMsgf(SpecHandle.IsValid(), TEXT("SpecHandle == nullptr for %s"), *GetName()))
 			{
-				const float DamageValue = AttributeSet->GetDamage();
-				const FGameplayTag ProjectileDamageTag = NativeGameplayTags::Projectile::TAG_DamageType_DirectDamage.GetTag();
-				SpecHandle.Data->SetSetByCallerMagnitude(ProjectileDamageTag, DamageValue);
+				if (AttributeSet)
+				{
+					const float DamageValue = AttributeSet->GetDamage();
+					const FGameplayTag ProjectileDamageTag = NativeGameplayTags::Projectile::TAG_DamageType_DirectDamage.GetTag();
+					SpecHandle.Data->SetSetByCallerMagnitude(ProjectileDamageTag, DamageValue);
 				
-				HitCharacterAcs->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);
+					HitCharacterAcs->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);	
+				}
 			}
 
 			if (OtherComp->IsSimulatingPhysics())

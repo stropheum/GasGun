@@ -17,6 +17,7 @@
 AStickyProjectile::AStickyProjectile()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	bAttachOnHit = true;
 }
 
 void AStickyProjectile::OnTagChanged(const FGameplayTag Tag, int32 NewCount)
@@ -38,39 +39,6 @@ void AStickyProjectile::BeginPlay()
 void AStickyProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	Super::OnHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
-	
-	if (OtherActor && OtherActor != this && OtherComp)
-	{
-		if (const ACharacterBase* OtherCharacter = Cast<ACharacterBase>(OtherActor); OtherCharacter)
-		{
-			USkeletalMeshComponent* OtherCharacterMesh = OtherCharacter->GetMesh();
-			AttachToComponent(OtherCharacterMesh, FAttachmentTransformRules::KeepWorldTransform);
-		}
-		else
-		{
-			AttachToActor(OtherActor, FAttachmentTransformRules::KeepWorldTransform);	
-		}
-
-		if (ProjectileMovement)
-		{
-			ProjectileMovement->StopMovementImmediately();
-			SetLifeSpan(0.f);
-		}
-
-		CollisionComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	}
-	else if (OtherComp)
-	{
-		AttachToComponent(OtherComp, FAttachmentTransformRules::KeepWorldTransform);
-
-		if (ProjectileMovement)
-		{
-			ProjectileMovement->StopMovementImmediately();
-			SetLifeSpan(0.f);
-		}
-
-		CollisionComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	}
 }
 
 void AStickyProjectile::Tick(const float DeltaTime)
